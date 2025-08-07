@@ -30,19 +30,28 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * 추상 디버그 서비스 클래스
+ * 
+ * 이 클래스는 DJI Cloud API에서 디버그 기능을 제공하는 추상 서비스 클래스입니다.
+ * 디버그 모드, 보조 조명, 배터리 관리, 디바이스 제어, ESIM 관리 등 다양한 디버그 기능을 포함합니다.
+ * 
  * @author sean
  * @version 1.7
  * @date 2023/6/29
  */
 public abstract class AbstractDebugService {
 
+    /**
+     * 서비스 발행 객체
+     */
     @Resource
     private ServicesPublish servicesPublish;
 
     /**
-     * Open the debug mode
-     * @param gateway
-     * @return  services_reply
+     * 디버그 모드 열기
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = GatewayTypeEnum.RC)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> debugModeOpen(GatewayManager gateway) {
@@ -53,9 +62,10 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Close the debug mode
-     * @param gateway
-     * @return  services_reply
+     * 디버그 모드 닫기
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = GatewayTypeEnum.RC)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> debugModeClose(GatewayManager gateway) {
@@ -66,9 +76,10 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Open the supplement light
-     * @param gateway
-     * @return  services_reply
+     * 보조 조명 열기
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = GatewayTypeEnum.RC)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> supplementLightOpen(GatewayManager gateway) {
@@ -79,9 +90,10 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Close the supplement light
-     * @param gateway
-     * @return  services_reply
+     * 보조 조명 닫기
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = GatewayTypeEnum.RC)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> supplementLightClose(GatewayManager gateway) {
@@ -92,10 +104,11 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Maintenance state switch of battery
-     * @param gateway
-     * @param request   data
-     * @return  services_reply
+     * 배터리 유지보수 상태 전환
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @param request  데이터
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = GatewayTypeEnum.RC)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> batteryMaintenanceSwitch(GatewayManager gateway, BatteryMaintenanceSwitchRequest request) {
@@ -107,10 +120,11 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Air conditioner working mode switch of dock
-     * @param gateway
-     * @param request   data
-     * @return  services_reply
+     * 독 공기조화기 작동 모드 전환
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @param request  데이터
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = GatewayTypeEnum.RC)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> airConditionerModeSwitch(GatewayManager gateway, AirConditionerModeSwitchRequest request) {
@@ -122,10 +136,11 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Sound and light alarm switch of dock
-     * @param gateway
-     * @param request   data
-     * @return  services_reply
+     * 독 소리 및 조명 경보 전환
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @param request  데이터
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = GatewayTypeEnum.RC)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> alarmStateSwitch(GatewayManager gateway, AlarmStateSwitchRequest request) {
@@ -137,10 +152,11 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Battery storage mode switch of dock
-     * @param gateway
-     * @param request   data
-     * @return  services_reply
+     * 독 배터리 저장 모드 전환
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @param request  데이터
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = GatewayTypeEnum.RC)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> batteryStoreModeSwitch(GatewayManager gateway, BatteryStoreModeSwitchRequest request) {
@@ -152,9 +168,10 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Reboot the dock
-     * @param gateway
-     * @return  services_reply
+     * 독 재부팅
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = GatewayTypeEnum.RC)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> deviceReboot(GatewayManager gateway) {
@@ -165,9 +182,10 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Power on the aircraft
-     * @param gateway
-     * @return  services_reply
+     * 소형기 전원 켜기
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = GatewayTypeEnum.RC)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> droneOpen(GatewayManager gateway) {
@@ -178,9 +196,10 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Power off the aircraft
-     * @param gateway
-     * @return  services_reply
+     * 소형기 전원 끄기
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = GatewayTypeEnum.RC)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> droneClose(GatewayManager gateway) {
@@ -191,9 +210,10 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Format the dock data
-     * @param gateway
-     * @return  services_reply
+     * 독 데이터 포맷
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = GatewayTypeEnum.RC)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> deviceFormat(GatewayManager gateway) {
@@ -204,9 +224,10 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Format the aircraft data
-     * @param gateway
-     * @return  services_reply
+     * 소형기 데이터 포맷
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = GatewayTypeEnum.RC)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> droneFormat(GatewayManager gateway) {
@@ -217,9 +238,10 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Open the dock cover
-     * @param gateway
-     * @return  services_reply
+     * 독 커버 열기
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = GatewayTypeEnum.RC)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> coverOpen(GatewayManager gateway) {
@@ -230,9 +252,10 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Close the dock cover
-     * @param gateway
-     * @return  services_reply
+     * 독 커버 닫기
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = GatewayTypeEnum.RC)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> coverClose(GatewayManager gateway) {
@@ -243,9 +266,10 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Open the putter
-     * @param gateway
-     * @return  services_reply
+     * 풀러 열기
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = {GatewayTypeEnum.RC, GatewayTypeEnum.DOCK2})
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> putterOpen(GatewayManager gateway) {
@@ -256,9 +280,10 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Close the putter
-     * @param gateway
-     * @return  services_reply
+     * 풀러 닫기
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = {GatewayTypeEnum.RC, GatewayTypeEnum.DOCK2})
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> putterClose(GatewayManager gateway) {
@@ -269,9 +294,10 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Turn on charging
-     * @param gateway
-     * @return  services_reply
+     * 충전 켜기
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = GatewayTypeEnum.RC)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> chargeOpen(GatewayManager gateway) {
@@ -282,9 +308,10 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Turn off charging
-     * @param gateway
-     * @return  services_reply
+     * 충전 끄기
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = GatewayTypeEnum.RC)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> chargeClose(GatewayManager gateway) {
@@ -295,10 +322,11 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Switch of 4G enhancement mode
-     * @param gateway
-     * @param request   data
-     * @return  services_reply
+     * 4G 강화 모드 전환
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @param request  데이터
+     * @return 서비스 응답
      */
     @CloudSDKVersion(exclude = GatewayTypeEnum.RC)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> sdrWorkmodeSwitch(GatewayManager gateway, SdrWorkmodeSwitchRequest request) {
@@ -310,11 +338,12 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Common interface for remote debugging
-     * @param gateway
-     * @param methodEnum
-     * @param request   data
-     * @return  services_reply
+     * 원격 디버깅 공통 인터페이스
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @param methodEnum 메서드 열거형
+     * @param request  데이터
+     * @return 서비스 응답
      */
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> remoteDebug(GatewayManager gateway, DebugMethodEnum methodEnum, BaseModel request) {
         try {
@@ -337,9 +366,10 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * Inform of remote debug progress
-     * @param request  data
-     * @param headers   The headers for a {@link Message}.
+     * 원격 디버깅 진행 상태 알림
+     * 
+     * @param request 데이터
+     * @param headers 메시지의 헤더입니다.
      * @return events_reply
      */
     @ServiceActivator(inputChannel = ChannelName.INBOUND_EVENTS_CONTROL_PROGRESS, outputChannel = ChannelName.OUTBOUND_EVENTS)
@@ -348,10 +378,11 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * esim activation
-     * @param gateway   gateway device
-     * @param request   data
-     * @return  services_reply
+     * esim 활성화
+     * 
+     * @param gateway  게이트웨이 디바이스
+     * @param request  데이터
+     * @return 서비스 응답
      */
     @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> esimActivate(GatewayManager gateway, EsimActivateRequest request) {
@@ -363,10 +394,11 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * esim and sim switching
-     * @param gateway   gateway device
-     * @param request   data
-     * @return  services_reply
+     * esim 및 sim 슬롯 전환
+     * 
+     * @param gateway  게이트웨이 디바이스
+     * @param request  데이터
+     * @return 서비스 응답
      */
     @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> simSlotSwitch(GatewayManager gateway, SimSlotSwitchRequest request) {
@@ -378,10 +410,11 @@ public abstract class AbstractDebugService {
     }
 
     /**
-     * esim operator switching
-     * @param gateway   gateway device
-     * @param request   data
-     * @return  services_reply
+     * esim 운영자 전환
+     * 
+     * @param gateway  게이트웨이 디바이스
+     * @param request  데이터
+     * @return 서비스 응답
      */
     @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> esimOperatorSwitch(GatewayManager gateway, EsimOperatorSwitchRequest request) {

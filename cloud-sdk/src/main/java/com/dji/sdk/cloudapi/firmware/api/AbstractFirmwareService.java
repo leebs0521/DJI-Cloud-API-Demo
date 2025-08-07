@@ -21,19 +21,28 @@ import org.springframework.messaging.MessageHeaders;
 import javax.annotation.Resource;
 
 /**
+ * 추상 펌웨어 서비스 클래스
+ * 
+ * 이 클래스는 DJI Cloud API에서 펌웨어 관련 기능을 제공하는 추상 서비스 클래스입니다.
+ * OTA(Over-The-Air) 펌웨어 업데이트 생성과 진행 상황 모니터링 기능을 포함합니다.
+ * 
  * @author sean
  * @version 1.7
  * @date 2023/6/28
  */
 public abstract class AbstractFirmwareService {
 
+    /**
+     * 서비스 발행 객체
+     */
     @Resource
     private ServicesPublish servicesPublish;
 
     /**
-     * Firmware upgrade progress
-     * @param request  data
-     * @param headers   The headers for a {@link Message}.
+     * 펌웨어 업그레이드 진행 상황
+     * 
+     * @param request 데이터
+     * @param headers 메시지의 헤더입니다.
      */
     @ServiceActivator(inputChannel = ChannelName.INBOUND_EVENTS_OTA_PROGRESS, outputChannel = ChannelName.OUTBOUND_EVENTS)
     public TopicEventsResponse<MqttReply> otaProgress(TopicEventsRequest<EventsDataRequest<OtaProgress>> request, MessageHeaders headers) {
@@ -41,10 +50,11 @@ public abstract class AbstractFirmwareService {
     }
 
     /**
-     * Firmware upgrade
-     * @param gateway
-     * @param request   data
-     * @return  services_reply
+     * 펌웨어 업그레이드
+     * 
+     * @param gateway 게이트웨이 관리자
+     * @param request  데이터
+     * @return 서비스 응답
      */
     public TopicServicesResponse<ServicesReplyData<OtaCreateResponse>> otaCreate(GatewayManager gateway, OtaCreateRequest request) {
         return servicesPublish.publish(

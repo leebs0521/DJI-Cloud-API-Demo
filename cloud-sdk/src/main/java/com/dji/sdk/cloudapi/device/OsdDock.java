@@ -4,94 +4,216 @@ import com.dji.sdk.annotations.CloudSDKVersion;
 import com.dji.sdk.config.version.CloudSDKVersionEnum;
 
 /**
+ * 도크 OSD(On-Screen Display) 정보 클래스
+ * 
+ * 이 클래스는 도크의 실시간 상태 정보를 담고 있습니다.
+ * 네트워크 상태, 드론 상태, 환경 정보, 전력 정보 등을 포함합니다.
+ * 
  * @author sean
  * @version 1.3
  * @date 2022/11/3
  */
 public class OsdDock {
 
+    /**
+     * 네트워크 상태 정보
+     */
     private NetworkState networkState;
 
+    /**
+     * 드론이 도크에 있는지 여부
+     */
     private Boolean droneInDock;
 
+    /**
+     * 드론 충전 상태
+     */
     private DroneChargeState droneChargeState;
 
+    /**
+     * 강우 상태
+     */
     private RainfallEnum rainfall;
 
+    /**
+     * 풍속 (m/s)
+     */
     private Float windSpeed;
 
+    /**
+     * 환경 온도 (°C)
+     */
     private Float environmentTemperature;
 
+    /**
+     * 도크 내부 온도 (°C)
+     */
     private Float temperature;
 
+    /**
+     * 습도 (%)
+     */
     private Integer humidity;
 
+    /**
+     * 위도
+     */
     private Float latitude;
 
+    /**
+     * 경도
+     */
     private Float longitude;
 
+    /**
+     * 고도 (m)
+     */
     private Float height;
 
+    /**
+     * 대체 착륙 지점 정보
+     */
     private AlternateLandPoint alternateLandPoint;
 
+    /**
+     * 최초 전원 켜진 시간 (타임스탬프)
+     */
     private Long firstPowerOn;
 
+    /**
+     * 도크 위치 상태
+     */
     private DockPositionState positionState;
 
+    /**
+     * 저장소 정보
+     */
     private Storage storage;
 
+    /**
+     * 도크 모드 코드
+     */
     private DockModeCodeEnum modeCode;
 
+    /**
+     * 커버 상태
+     */
     private CoverStateEnum coverState;
 
+    /**
+     * 보조 조명 상태
+     */
     private Boolean supplementLightState;
 
+    /**
+     * 비상 정지 상태
+     */
     private Boolean emergencyStopState;
 
+    /**
+     * 에어컨 정보
+     */
     private AirConditioner airConditioner;
 
+    /**
+     * 배터리 저장 모드
+     */
     private BatteryStoreModeEnum batteryStoreMode;
 
+    /**
+     * 알람 상태
+     */
     private Boolean alarmState;
 
+    /**
+     * 퍼터 상태
+     */
     private PutterStateEnum putterState;
 
+    /**
+     * 도크 서브 디바이스 정보
+     */
     private DockSubDevice subDevice;
 
+    /**
+     * 작업 번호
+     */
     private Integer jobNumber;
 
+    /**
+     * 누적 작동 시간 (초)
+     */
     private Long accTime;
 
+    /**
+     * 활성화 시간 (타임스탬프)
+     */
     private Long activationTime;
 
+    /**
+     * 도크 유지보수 상태
+     */
     private OsdDockMaintainStatus maintainStatus;
 
+    /**
+     * 전원 공급 전압 (V)
+     */
     private Integer electricSupplyVoltage;
 
+    /**
+     * 작동 전압 (V)
+     */
     private Integer workingVoltage;
 
+    /**
+     * 작동 전류 (A)
+     */
     private Integer workingCurrent;
 
+    /**
+     * 백업 배터리 정보
+     */
     private BackupBattery backupBattery;
 
+    /**
+     * 드론 배터리 유지보수 정보
+     */
     private DroneBatteryMaintenanceInfo droneBatteryMaintenanceInfo;
 
+    /**
+     * 비행 작업 단계 코드
+     */
     private FlighttaskStepCodeEnum flighttaskStepCode;
 
+    /**
+     * 비행 작업 준비 용량
+     */
     private Integer flighttaskPrepareCapacity;
 
+    /**
+     * 미디어 파일 상세 정보
+     */
     private MediaFileDetail mediaFileDetail;
 
+    /**
+     * 무선 링크 정보
+     */
     private WirelessLink wirelessLink;
 
+    /**
+     * DRC 상태
+     */
     private DrcStateEnum drcState;
 
     /**
-     * User experience improvement program
+     * 사용자 경험 개선 프로그램 상태
      */
     @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_0)
     private UserExperienceImprovementEnum userExperienceImprovement;
 
+    /**
+     * 기본 생성자
+     */
     public OsdDock() {
     }
 

@@ -7,90 +7,209 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 /**
+ * 도크 드론 OSD (On-Screen Display) 정보 클래스
+ * 
+ * 이 클래스는 도크에 연결된 드론의 실시간 상태 정보를 담습니다.
+ * 드론의 위치, 속도, 배터리, 페이로드, 비행 모드 등 다양한 정보를 포함합니다.
+ * 
  * @author sean.zhou
  * @version 0.1
  * @date 2021/11/23
  */
 public class OsdDockDrone {
 
+    /**
+     * 드론의 헤딩 각도 (도)
+     */
     private Float attitudeHead;
 
+    /**
+     * 드론의 피치 각도 (도)
+     */
     private Double attitudePitch;
 
+    /**
+     * 드론의 롤 각도 (도)
+     */
     private Double attitudeRoll;
 
+    /**
+     * 드론의 고도 (미터)
+     */
     private Float elevation;
 
+    /**
+     * 드론 배터리 정보
+     */
     private DroneBattery battery;
 
+    /**
+     * 드론 펌웨어 버전
+     */
     private String firmwareVersion;
 
+    /**
+     * 드론 기어 상태
+     */
     private GearEnum gear;
 
+    /**
+     * 드론의 현재 높이 (미터)
+     */
     private Float height;
 
+    /**
+     * 홈 포인트까지의 거리 (미터)
+     */
     private Float homeDistance;
 
+    /**
+     * 수평 속도 (m/s)
+     */
     private Float horizontalSpeed;
 
+    /**
+     * 드론의 위도
+     */
     private Float latitude;
 
+    /**
+     * 드론의 경도
+     */
     private Float longitude;
 
+    /**
+     * 드론의 비행 모드 코드
+     */
     private DroneModeCodeEnum modeCode;
 
+    /**
+     * 총 비행 거리 (미터)
+     */
     private Double totalFlightDistance;
 
+    /**
+     * 총 비행 시간 (초)
+     */
     private Float totalFlightTime;
 
+    /**
+     * 수직 속도 (m/s)
+     */
     private Float verticalSpeed;
 
+    /**
+     * 풍향
+     */
     private WindDirectionEnum windDirection;
 
+    /**
+     * 풍속 (m/s)
+     */
     private Float windSpeed;
 
+    /**
+     * 드론 위치 상태
+     */
     private DronePositionState positionState;
 
+    /**
+     * 드론에 연결된 페이로드 목록
+     */
     @JsonProperty(PayloadModelConst.PAYLOAD_KEY)
     private List<DockDronePayload> payloads;
 
+    /**
+     * 스토리지 정보
+     */
     private Storage storage;
 
+    /**
+     * 야간 조명 상태
+     */
     private SwitchActionEnum nightLightsState;
 
+    /**
+     * 높이 제한 (미터)
+     */
     private Integer heightLimit;
 
+    /**
+     * 거리 제한 상태
+     */
     private DockDistanceLimitStatus distanceLimitStatus;
 
+    /**
+     * 장애물 회피 설정
+     */
     private ObstacleAvoidance obstacleAvoidance;
 
+    /**
+     * 활성화 시간 (타임스탬프)
+     */
     private Long activationTime;
 
+    /**
+     * 카메라 목록
+     */
     private List<OsdCamera> cameras;
 
+    /**
+     * RC 연결 손실 시 동작
+     */
     private RcLostActionEnum rcLostAction;
 
+    /**
+     * RTH 고도 (미터)
+     */
     private Integer rthAltitude;
 
+    /**
+     * 총 비행 횟수
+     */
     private Integer totalFlightSorties;
 
+    /**
+     * RC 연결 손실 시 웨이라인 종료 여부 (v1.0.0에서 deprecated)
+     */
     @CloudSDKVersion(deprecated = CloudSDKVersionEnum.V1_0_0)
     private ExitWaylineWhenRcLostEnum exitWaylineWhenRcLost;
 
+    /**
+     * 국가 코드
+     */
     private String country;
 
+    /**
+     * RID (Remote ID) 상태
+     */
     private Boolean ridState;
 
+    /**
+     * 구역 제한 근접 여부
+     */
     @JsonProperty("is_near_area_limit")
     private Boolean nearAreaLimit;
 
+    /**
+     * 높이 제한 근접 여부
+     */
     @JsonProperty("is_near_height_limit")
     private Boolean nearHeightLimit;
 
+    /**
+     * 드론 유지보수 상태
+     */
     private OsdDroneMaintainStatus maintainStatus;
 
+    /**
+     * 추적 ID
+     */
     private String trackId;
 
+    /**
+     * 기본 생성자
+     */
     public OsdDockDrone() {
     }
 

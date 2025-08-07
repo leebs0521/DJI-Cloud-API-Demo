@@ -1,37 +1,21 @@
-# 关于DJI Cloud API Demo 终止维护公告
-
-发布日期：2025年4月10日
-
-1.项目终止维护说明
-即日起，大疆创新(DJI)将停止对DJI Cloud API Demo (地址：https://github.com/dji-sdk/Cloud-API-Demo-Web、https://github.com/dji-sdk/DJI-Cloud-API-Demo）示例项目的更新与技术支持。
-该项目作为官方提供的云端集成参考实现，旨在辅助开发者理解API调用逻辑。并非生产级解决方案，可能存在未修复的安全隐患（如数据泄露、未授权访问等）。请避免在生产环境中直接使用Demo中的代码，若直接使用我们强烈建议您启动安全自查，或避免将基于该Demo的服务暴露于公网环境。
-
-2.免责声明
-因直接使用Demo代码导致的业务损失、数据风险或第三方纠纷，DJI将不承担任何责任。
-
-3.后续支持
-如有疑问，请联系DJI开发者支持团队（邮箱：developer@dji.com)或访问大疆开发者社区获取最新技术资源。
-感谢您一直以来的理解与支持！
-
 # DJI Cloud API
 
-## What is the DJI Cloud API?
+## DJI Cloud API란 무엇인가요?
 
-The launch of the Cloud API mainly solves the problem of developers reinventing the wheel. For developers who do not need in-depth customization of APP, they can directly use DJI Pilot2 to communicate with the third cloud platform, and developers can focus on the development and implementation of cloud service interfaces. 
+Cloud API는 개발자들이 처음부터 다시 개발하는 것을 방지하기 위해 출시되었습니다. APP의 심층적인 커스터마이징이 필요하지 않은 개발자는 DJI Pilot2를 사용하여 제3자 클라우드 플랫폼과 직접 통신할 수 있으며, 개발자는 클라우드 서비스 인터페이스 개발 및 구현에만 집중할 수 있습니다.
 
 ## Docker
 
-If you don't want to install the development environment, you can try deploying with docker. [Click the link to download.](https://terra-sz-hc1pro-cloudapi.oss-cn-shenzhen.aliyuncs.com/c0af9fe0d7eb4f35a8fe5b695e4d0b96/docker/cloud_api_sample_docker.zip)
+개발 환경을 설치하지 않으려면 docker를 사용하여 배포해 볼 수 있습니다. [다운로드 링크를 클릭하세요.](https://terra-sz-hc1pro-cloudapi.oss-cn-shenzhen.aliyuncs.com/c0af9fe0d7eb4f35a8fe5b695e4d0b96/docker/cloud_api_sample_docker.zip)
 
-## Usage
+## 사용법
 
-For more documentation, please visit the [DJI Developer Documentation](https://developer.dji.com/doc/cloud-api-tutorial/cn/).
+자세한 문서는 [DJI 개발자 문서](https://developer.dji.com/doc/cloud-api-tutorial/cn/)를 참조하세요.
 
-## Latest Release
+## 최신 릴리스
 
-Cloud API 1.10.0 was released on 7 Apr 2024. For more information, please visit the [Release Note](https://developer.dji.com/doc/cloud-api-tutorial/cn/).
+Cloud API 1.10.0이 2024년 4월 7일에 릴리스되었습니다. 자세한 내용은 [릴리스 노트](https://developer.dji.com/doc/cloud-api-tutorial/cn/)를 참조하세요.
 
-## License
+## 라이선스
 
-Cloud API is MIT-licensed. Please refer to the LICENSE file for more information.
-
+Cloud API는 MIT 라이선스를 따릅니다. 자세한 내용은 LICENSE 파일을 참조하세요.

@@ -1,28 +1,60 @@
 package com.dji.sdk.cloudapi.device;
 
 /**
+ * IR 측정 영역 클래스
+ * 
+ * 이 클래스는 적외선 카메라의 측정 영역 정보를 담습니다.
+ * 위치, 크기, 온도 정보, 최고/최저 온도 포인트 등을 포함합니다.
+ * 
  * @author sean
  * @version 1.9
  * @date 2023/12/12
  */
 public class IrMeteringArea {
 
+    /**
+     * X 좌표
+     */
     private Float x;
 
+    /**
+     * Y 좌표
+     */
     private Float y;
 
+    /**
+     * 온도 (섭씨)
+     */
     private Float temperature;
 
+    /**
+     * 너비
+     */
     private Float width;
 
+    /**
+     * 높이
+     */
     private Float height;
 
+    /**
+     * 평균 온도 (섭씨)
+     */
     private Float averTemperature;
 
+    /**
+     * 최저 온도 포인트
+     */
     private IrMeteringPoint minTemperaturePoint;
 
+    /**
+     * 최고 온도 포인트
+     */
     private IrMeteringPoint maxTemperaturePoint;
 
+    /**
+     * 기본 생성자
+     */
     public IrMeteringArea() {
     }
 
