@@ -11,6 +11,15 @@ import java.util.Arrays;
  * IErrorInfo 인터페이스를 구현한 오류 정보를 포함하며,
  * 다양한 생성자를 통해 다양한 상황에 맞는 예외를 생성할 수 있습니다.
  * 
+ * 주요 기능:
+ * - 다양한 생성자를 통한 예외 생성
+ * - IErrorInfo를 통한 표준화된 오류 정보 제공
+ * - 클래스와 코드 정보를 통한 상세한 오류 메시지 생성
+ * - 원인 예외와 추가 메시지를 통한 예외 체이닝
+ * 
+ * 이 클래스는 SDK의 모든 예외 처리를 표준화하고
+ * 일관된 오류 정보를 제공합니다.
+ * 
  * @author sean
  * @version 1.7
  * @date 2023/5/19
@@ -19,6 +28,8 @@ public class CloudSDKException extends RuntimeException {
 
     /**
      * 오류 정보를 담는 객체
+     * 
+     * 예외와 관련된 상세한 오류 정보를 포함합니다.
      */
     private IErrorInfo errorInfo;
 
@@ -44,6 +55,8 @@ public class CloudSDKException extends RuntimeException {
 
     /**
      * 기본 예외를 생성합니다.
+     * 
+     * 기본 메시지 "SDK Exception"으로 예외를 생성합니다.
      */
     public CloudSDKException() {
         this("SDK Exception");

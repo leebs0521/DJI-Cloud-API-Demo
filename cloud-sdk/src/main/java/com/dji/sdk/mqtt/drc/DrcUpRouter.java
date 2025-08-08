@@ -13,6 +13,20 @@ import java.io.IOException;
 import java.util.Arrays;
 
 /**
+ * DRC 업로드 라우터
+ * 
+ * 이 클래스는 DRC(Direct Remote Control) 업로드 메시지를
+ * 적절한 채널로 라우팅하는 역할을 합니다.
+ * 
+ * 주요 기능:
+ * - DRC 업로드 메시지 수신
+ * - 메시지 변환 및 파싱
+ * - 메서드별 채널 라우팅
+ * - JSON 직렬화/역직렬화
+ * 
+ * 이 클래스는 Spring Integration DSL을 사용하여
+ * DRC 업로드 메시지의 라우팅을 처리합니다.
+ * 
  * @author sean
  * @version 1.1
  * @date 2022/6/1
@@ -20,6 +34,14 @@ import java.util.Arrays;
 @Configuration
 public class DrcUpRouter {
 
+    /**
+     * DRC 업로드 라우터 플로우를 생성합니다.
+     * 
+     * DRC 업로드 메시지를 수신하고 적절한 채널로 라우팅하는
+     * Integration Flow를 정의합니다.
+     * 
+     * @return DRC 업로드 라우터 플로우
+     */
     @Bean
     public IntegrationFlow drcUpRouterFlow() {
         return IntegrationFlows

@@ -25,6 +25,8 @@ import org.springframework.messaging.MessageHeaders;
 import javax.annotation.Resource;
 
 /**
+ * 오프라인 맵 서비스 추상 클래스
+ * 오프라인 맵 동기화 및 관리를 위한 기본 기능을 제공합니다.
  * @author sean
  * @version 1.7
  * @date 2023/10/19
@@ -35,9 +37,11 @@ public abstract class AbstractOfflineMapService {
     private ServicesPublish servicesPublish;
 
     /**
-     * When the offline map is closed, offline map synchronization will no longer automatically synchronize.
-     * @param request  data
-     * @param headers  The headers for a {@link Message}.
+     * 도킹 스테이션 드론 오프라인 맵 활성화 처리
+     * 오프라인 맵이 비활성화되면, 오프라인 맵 동기화가 더 이상 자동으로 동기화되지 않습니다.
+     * @param request 요청 데이터
+     * @param headers 메시지 헤더
+     * @return 상태 응답
      */
     @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2)
     @ServiceActivator(inputChannel = ChannelName.INBOUND_STATE_DOCK_DRONE_OFFLINE_MAP_ENABLE, outputChannel = ChannelName.OUTBOUND_STATE)
@@ -46,10 +50,11 @@ public abstract class AbstractOfflineMapService {
     }
 
     /**
-     * Actively trigger offline map updates.
-     * After receiving the message, the airport will actively pull offline map information at the appropriate time and trigger the offline map synchronization mechanism.
-     * @param gateway   gateway device
-     * @return  services_reply
+     * 오프라인 맵 업데이트 활성 트리거
+     * 메시지를 받은 후, 공항은 적절한 시점에 오프라인 맵 정보를 적극적으로 가져와서
+     * 오프라인 맵 동기화 메커니즘을 트리거합니다.
+     * @param gateway 게이트웨이 디바이스
+     * @return 서비스 응답
      */
     @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2)
     public TopicServicesResponse<ServicesReplyData> offlineMapUpdate(GatewayManager gateway) {
@@ -59,10 +64,10 @@ public abstract class AbstractOfflineMapService {
     }
 
     /**
-     * Offline map file synchronization status
-     * @param request  data
-     * @param headers   The headers for a {@link Message}.
-     * @return events_reply
+     * 오프라인 맵 파일 동기화 상태 처리
+     * @param request 요청 데이터
+     * @param headers 메시지 헤더
+     * @return 이벤트 응답
      */
     @ServiceActivator(inputChannel = ChannelName.INBOUND_EVENTS_OFFLINE_MAP_SYNC_PROGRESS, outputChannel = ChannelName.OUTBOUND_EVENTS)
     @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2)
@@ -71,13 +76,13 @@ public abstract class AbstractOfflineMapService {
     }
 
     /**
-     * The dock will actively pull the latest offline map file information.
-     * From this information, it will check whether the aircraft's offline map file name or checksum has changed.
-     * Once a change is found, offline map synchronization will be triggered.
-     * Otherwise, synchronization will not be triggered.
-     * @param request  data
-     * @param headers  The headers for a {@link Message}.
-     * @return events_reply
+     * 오프라인 맵 정보 조회
+     * 도킹 스테이션은 최신 오프라인 맵 파일 정보를 적극적으로 가져옵니다.
+     * 이 정보에서 항공기의 오프라인 맵 파일명이나 체크섬이 변경되었는지 확인합니다.
+     * 변경사항이 발견되면 오프라인 맵 동기화가 트리거되고, 그렇지 않으면 동기화되지 않습니다.
+     * @param request 요청 데이터
+     * @param headers 메시지 헤더
+     * @return 요청 응답
      */
     @ServiceActivator(inputChannel = ChannelName.INBOUND_REQUESTS_OFFLINE_MAP_GET, outputChannel = ChannelName.OUTBOUND_REQUESTS)
     @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2)

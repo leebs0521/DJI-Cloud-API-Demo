@@ -17,6 +17,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 /**
+ * 지도 요소 관리를 위한 HTTP API 인터페이스
  * @author sean
  * @version 0.2
  * @date 2021/11/29
@@ -27,15 +28,16 @@ public interface IHttpMapService {
     String PREFIX = "map/api/v1";
 
     /**
-     * In the first connection, pilot will send out this http request to get the group element list.
-     * Also, if pilot receives a group refresh instruction from WebSocket,
-     * it needs the same interface to request the group element list.
-     * @param workspaceId
-     * @param groupId
-     * @param isDistributed
-     * @param req
-     * @param rsp
-     * @return
+     * 지도 요소 목록 조회
+     * 첫 번째 연결 시, 파일럿이 이 HTTP 요청을 보내서 그룹 요소 목록을 가져옵니다.
+     * 또한, 파일럿이 WebSocket에서 그룹 새로고침 지시를 받으면,
+     * 동일한 인터페이스를 사용하여 그룹 요소 목록을 요청해야 합니다.
+     * @param workspaceId 워크스페이스 ID
+     * @param groupId 그룹 ID (선택사항)
+     * @param isDistributed 분산 여부 (선택사항)
+     * @param req HTTP 요청 객체
+     * @param rsp HTTP 응답 객체
+     * @return 지도 요소 목록
      */
     @Operation(summary = "get map elements", description = "In the first connection, pilot will send out this http " +
             "request to get the group element list. Also, if pilot receives a group refresh instruction from " +
@@ -57,13 +59,14 @@ public interface IHttpMapService {
             HttpServletRequest req, HttpServletResponse rsp);
 
     /**
-     * When user draws a point, line or polygon on the PILOT/Web side.
-     * @param workspaceId
-     * @param groupId
-     * @param elementCreate
-     * @param req
-     * @param rsp
-     * @return
+     * 지도 요소 생성
+     * 사용자가 PILOT/Web 측에서 점, 선 또는 다각형을 그릴 때 호출됩니다.
+     * @param workspaceId 워크스페이스 ID
+     * @param groupId 그룹 ID
+     * @param elementCreate 생성할 요소 정보
+     * @param req HTTP 요청 객체
+     * @param rsp HTTP 응답 객체
+     * @return 생성된 요소 정보
      */
     @Operation(summary = "create map element", description = "When user draws a point, line or polygon on the PILOT/Web side.",
             parameters = {
@@ -83,13 +86,14 @@ public interface IHttpMapService {
 
 
     /**
-     * When user edits a point, line or polygon on the PILOT/Web side.
-     * @param workspaceId
-     * @param elementId
-     * @param elementUpdate
-     * @param req
-     * @param rsp
-     * @return
+     * 지도 요소 수정
+     * 사용자가 PILOT/Web 측에서 점, 선 또는 다각형을 편집할 때 호출됩니다.
+     * @param workspaceId 워크스페이스 ID
+     * @param elementId 요소 ID
+     * @param elementUpdate 수정할 요소 정보
+     * @param req HTTP 요청 객체
+     * @param rsp HTTP 응답 객체
+     * @return 수정 결과
      */
     @Operation(summary = "update map element", description = "When user edits a point, line or polygon on the PILOT/Web side.",
             parameters = {
@@ -105,10 +109,11 @@ public interface IHttpMapService {
 
 
     /**
-     * When user delete a point, line or polygon on the PILOT/Web side.
-     * @param workspaceId
-     * @param elementId
-     * @return
+     * 지도 요소 삭제
+     * 사용자가 PILOT/Web 측에서 점, 선 또는 다각형을 삭제할 때 호출됩니다.
+     * @param workspaceId 워크스페이스 ID
+     * @param elementId 요소 ID
+     * @return 삭제 결과
      */
     @Operation(summary = "delete map element", description = "When user delete a point, line or polygon on the PILOT/Web side.",
             parameters = {

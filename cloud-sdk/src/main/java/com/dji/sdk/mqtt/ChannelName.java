@@ -5,6 +5,19 @@ package com.dji.sdk.mqtt;
  * 
  * MQTT 메시지 처리를 위한 모든 채널 이름을 정의합니다.
  * 각 채널은 특정 타입의 메시지를 처리하는 역할을 담당합니다.
+ * 
+ * 주요 구성 요소:
+ * - 기본 채널: INBOUND, OUTBOUND, DEFAULT
+ * - 상태 관련 채널: STATUS, STATE 관련 채널들
+ * - 서비스 관련 채널: SERVICES_REPLY
+ * - OSD 관련 채널: OSD 관련 채널들
+ * - 요청 관련 채널: REQUESTS 관련 채널들
+ * - 이벤트 관련 채널: EVENTS 관련 채널들
+ * - 속성 관련 채널: PROPERTY_SET_REPLY
+ * - DRC 관련 채널: DRC_UP 관련 채널들
+ * 
+ * 이 클래스는 MQTT 메시지 라우팅을 위한
+ * 채널 이름의 표준화를 제공합니다.
  *
  * @author sean.zhou
  * @date 2021/11/10

@@ -18,6 +18,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * 이 클래스는 DJI Cloud SDK의 핵심 관리자로, 디바이스 등록, 해제, 조회 기능을 제공합니다.
  * ConcurrentHashMap을 사용하여 스레드 안전한 디바이스 관리가 가능합니다.
  * 
+ * 주요 기능:
+ * - 디바이스 등록 및 관리
+ * - 등록된 디바이스 조회
+ * - 디바이스 로그아웃 (제거)
+ * - 스레드 안전한 디바이스 관리
+ * 
+ * 이 클래스는 SDK의 모든 디바이스 인스턴스를
+ * 중앙에서 관리하는 싱글톤 패턴을 구현합니다.
+ * 
  * @author sean
  * @version 1.7
  * @date 2023/5/19
@@ -25,14 +34,18 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SDKManager {
 
     /**
-     * 기본 생성자 - 외부에서 인스턴스화를 방지하기 위해 private으로 선언
+     * 기본 생성자
+     * 
+     * 외부에서 인스턴스화를 방지하기 위해 private으로 선언되었습니다.
      */
     private SDKManager() {
     }
 
     /**
      * 등록된 디바이스들을 저장하는 스레드 안전한 맵
-     * 키: 게이트웨이 시리얼 번호, 값: GatewayManager 인스턴스
+     * 
+     * 키: 게이트웨이 시리얼 번호
+     * 값: GatewayManager 인스턴스
      */
     private static final ConcurrentHashMap<String, GatewayManager> SDK_MAP = new ConcurrentHashMap<>(16);
 
@@ -54,6 +67,9 @@ public class SDKManager {
     /**
      * 디바이스를 등록합니다. (도메인, 타입, 서브타입 기반)
      * 
+     * 디바이스의 도메인, 타입, 서브타입을 기반으로 적절한 게이트웨이 타입을
+     * 자동으로 결정하여 디바이스를 등록합니다.
+     * 
      * @param gatewaySn 게이트웨이 시리얼 번호
      * @param droneSn 드론 시리얼 번호
      * @param domain 디바이스 도메인 (예: PILOT, DOCK)
@@ -71,6 +87,8 @@ public class SDKManager {
     /**
      * 디바이스를 등록합니다. (GatewayTypeEnum 기반)
      * 
+     * 명시적으로 게이트웨이 타입을 지정하여 디바이스를 등록합니다.
+     * 
      * @param gatewaySn 게이트웨이 시리얼 번호
      * @param droneSn 드론 시리얼 번호
      * @param type 게이트웨이 타입 열거형
@@ -85,6 +103,8 @@ public class SDKManager {
     /**
      * GatewayManager 인스턴스를 직접 등록합니다.
      * 
+     * 이미 생성된 GatewayManager 인스턴스를 직접 등록합니다.
+     * 
      * @param gateway 등록할 GatewayManager 인스턴스
      * @return 등록된 GatewayManager 인스턴스
      */
@@ -95,6 +115,9 @@ public class SDKManager {
 
     /**
      * 등록된 디바이스를 로그아웃(제거)합니다.
+     * 
+     * 지정된 게이트웨이 시리얼 번호에 해당하는 디바이스를
+     * SDK 관리자에서 제거합니다.
      * 
      * @param gatewaySn 제거할 게이트웨이 시리얼 번호
      */

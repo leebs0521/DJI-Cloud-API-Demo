@@ -24,6 +24,15 @@ import java.util.UUID;
  * 이 클래스는 MQTT 인바운드/아웃바운드 메시지 처리를 위한 Spring Integration 설정을 제공합니다.
  * MQTT 브로커와의 연결, 메시지 변환, 채널 설정 등을 담당합니다.
  * 
+ * 주요 기능:
+ * - MQTT 인바운드 어댑터 설정
+ * - MQTT 아웃바운드 핸들러 설정
+ * - 기본 메시지 핸들러 설정
+ * - 메시지 변환기 설정
+ * 
+ * 이 클래스는 Spring Integration을 사용하여
+ * MQTT 통신을 위한 완전한 설정을 제공합니다.
+ * 
  * @author sean.zhou
  * @date 2021/11/10
  * @version 0.1

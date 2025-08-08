@@ -17,16 +17,45 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * Snake Case 데이터 바인더
+ * 
+ * 이 클래스는 HTTP 요청의 snake_case 파라미터를
+ * Java 객체의 camelCase 필드로 바인딩하는 기능을 제공합니다.
+ * 
+ * 주요 기능:
+ * - snake_case 파라미터를 camelCase 필드로 자동 매핑
+ * - JsonProperty 어노테이션을 통한 커스텀 필드 매핑
+ * - Enum 타입의 자동 변환 및 처리
+ * - Collection 타입의 파라미터 처리
+ * 
+ * 이 클래스는 GetSnakeArgumentProcessor에서 사용되어
+ * HTTP 요청 파라미터의 자동 변환을 처리합니다.
+ * 
  * @author sean
  * @version 1.2
  * @date 2022/9/9
  */
 public class GetSnakeDataBinder extends ExtendedServletRequestDataBinder {
 
+    /**
+     * 클래스 생성자
+     * 
+     * @param target 바인딩할 대상 객체
+     * @param objectName 객체 이름
+     */
     public GetSnakeDataBinder(Object target, String objectName) {
         super(target, objectName);
     }
 
+    /**
+     * 바인딩 값을 추가합니다.
+     * 
+     * HTTP 요청의 파라미터를 분석하여 snake_case를 camelCase로 변환하고
+     * 대상 객체의 필드에 바인딩합니다.
+     * 
+     * @param mpvs 변경 가능한 속성 값들
+     * @param request 서블릿 요청
+     */
     @Override
     protected void addBindValues(MutablePropertyValues mpvs, ServletRequest request) {
         List<PropertyValue> propertyValueList = mpvs.getPropertyValueList();
@@ -61,6 +90,17 @@ public class GetSnakeDataBinder extends ExtendedServletRequestDataBinder {
         super.addBindValues(mpvs, request);
     }
 
+    /**
+     * 값을 변환합니다.
+     * 
+     * 필드 타입에 따라 값을 적절한 형태로 변환합니다.
+     * Enum, Collection, 기본 타입 등을 처리합니다.
+     * 
+     * @param field 변환할 필드
+     * @param object 대상 객체
+     * @param value 변환할 값
+     * @return 변환된 값 리스트
+     */
     private Object convertValue(Field field, Object object, Object value) {
         List convertedValue = new ArrayList();
         if (Enum.class.isAssignableFrom(field.getType())) {
@@ -86,6 +126,18 @@ public class GetSnakeDataBinder extends ExtendedServletRequestDataBinder {
         return convertedValue;
     }
 
+    /**
+     * 실제 Enum 값을 가져옵니다.
+     * 
+     * JsonCreator 어노테이션이 있는 메서드를 사용하여
+     * Enum 값을 생성합니다.
+     * 
+     * @param type Enum 클래스 타입
+     * @param object 대상 객체
+     * @param value 변환할 값들
+     * @return 생성된 Enum 값
+     * @throws CloudSDKException 변환 실패 시
+     */
     private Object getRealEnumValue(Class type, Object object, Object... value) {
         if (!type.isEnum()) {
             return value;
