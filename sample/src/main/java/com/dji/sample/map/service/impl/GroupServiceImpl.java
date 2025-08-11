@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
+ * 그룹 서비스 구현체
  * @author sean
  * @version 0.2
  * @date 2021/11/29
@@ -32,6 +33,13 @@ public class GroupServiceImpl implements IGroupService {
     @Autowired
     private IGroupElementService groupElementService;
 
+    /**
+     * 워크스페이스 ID로 모든 그룹을 조회합니다.
+     * @param workspaceId 워크스페이스 ID
+     * @param groupId 그룹 ID (선택사항)
+     * @param isDistributed 분산 여부 (선택사항)
+     * @return 그룹 목록
+     */
     @Override
     public List<GetMapElementsResponse> getAllGroupsByWorkspaceId(String workspaceId, String groupId, Boolean isDistributed) {
 
@@ -45,6 +53,11 @@ public class GroupServiceImpl implements IGroupService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 워크스페이스 ID로 커스텀 그룹을 조회합니다.
+     * @param workspaceId 워크스페이스 ID
+     * @return 커스텀 그룹 정보
+     */
     @Override
     public Optional<GetMapElementsResponse> getCustomGroupByWorkspaceId(String workspaceId) {
         return Optional.ofNullable(mapper.selectOne(
@@ -56,9 +69,9 @@ public class GroupServiceImpl implements IGroupService {
     }
 
     /**
-     * Convert database entity objects into group data transfer object.
-     * @param entity
-     * @return
+     * 데이터베이스 엔티티 객체를 그룹 데이터 전송 객체로 변환합니다.
+     * @param entity 그룹 엔티티
+     * @return 그룹 응답 객체
      */
     private GetMapElementsResponse entityConvertToDto(GroupEntity entity) {
         if (entity == null) {

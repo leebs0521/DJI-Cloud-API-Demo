@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
+ * 파일 컨트롤러
+ * 미디어 파일의 조회 및 다운로드 관련 API를 제공합니다.
  * @author sean
  * @version 0.2
  * @date 2021/12/9
@@ -24,9 +26,11 @@ public class FileController {
     private IFileService fileService;
 
     /**
-     * Get information about all the media files in this workspace based on the workspace id.
-     * @param workspaceId
-     * @return
+     * 워크스페이스 ID를 기반으로 해당 워크스페이스의 모든 미디어 파일 정보를 조회합니다.
+     * @param page 페이지 번호 (기본값: 1)
+     * @param pageSize 페이지 크기 (기본값: 10)
+     * @param workspaceId 워크스페이스 ID
+     * @return 미디어 파일 목록 (페이징 처리됨)
      */
     @GetMapping("/{workspace_id}/files")
     public HttpResultResponse<PaginationData<MediaFileDTO>> getFilesList(@RequestParam(defaultValue = "1") Long page,
@@ -37,11 +41,11 @@ public class FileController {
     }
 
     /**
-     * Query the download address of the file according to the media file id,
-     * and redirect to this address directly for download.
-     * @param workspaceId
-     * @param fileId
-     * @param response
+     * 미디어 파일 ID에 따라 파일의 다운로드 주소를 조회하고,
+     * 해당 주소로 직접 리다이렉트하여 다운로드를 수행합니다.
+     * @param workspaceId 워크스페이스 ID
+     * @param fileId 파일 ID
+     * @param response HTTP 응답 객체
      */
     @GetMapping("/{workspace_id}/file/{file_id}/url")
     public void getFileUrl(@PathVariable(name = "workspace_id") String workspaceId,

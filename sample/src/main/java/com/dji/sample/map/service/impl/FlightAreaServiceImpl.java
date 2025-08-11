@@ -38,6 +38,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * 비행 영역 서비스 구현체
+ * 비행 영역의 생성, 수정, 삭제, 동기화를 관리하는 핵심 서비스입니다.
  * @author sean
  * @version 1.9
  * @date 2023/11/22
@@ -77,6 +79,11 @@ public class FlightAreaServiceImpl extends AbstractFlightAreaService implements 
     @Autowired
     private ObjectMapper objectMapper;
 
+    /**
+     * 영역 ID로 비행 영역을 조회합니다.
+     * @param areaId 영역 ID
+     * @return 비행 영역 정보
+     */
     @Override
     public Optional<FlightAreaDTO> getFlightAreaByAreaId(String areaId) {
         List<FlightAreaPropertyDTO> properties = flightAreaPropertyServices.getPropertyByElementIds(List.of(areaId));
@@ -87,6 +94,11 @@ public class FlightAreaServiceImpl extends AbstractFlightAreaService implements 
         return elementOpt.map(groupElementDTO -> this.element2FlightArea(objectMapper.convertValue(groupElementDTO, MapGroupElement.class), properties.get(0)));
     }
 
+    /**
+     * 워크스페이스의 비행 영역 목록을 조회합니다.
+     * @param workspaceId 워크스페이스 ID
+     * @return 비행 영역 목록
+     */
     @Override
     public List<FlightAreaDTO> getFlightAreaList(String workspaceId) {
         Optional<List<GetMapElementsResponse>> elementsOpt = groupService.getCustomGroupByWorkspaceId(workspaceId)
@@ -101,6 +113,12 @@ public class FlightAreaServiceImpl extends AbstractFlightAreaService implements 
         return elements.stream().map(element -> this.element2FlightArea(element, propertyMap.get(element.getId()))).collect(Collectors.toList());
     }
 
+    /**
+     * 새로운 비행 영역을 생성합니다.
+     * @param workspaceId 워크스페이스 ID
+     * @param username 사용자명
+     * @param param 비행 영역 생성 파라미터
+     */
     @Override
     public void createFlightArea(String workspaceId, String username, PostFlightAreaParam param) {
         Optional<GetMapElementsResponse> groupOpt = groupService.getCustomGroupByWorkspaceId(workspaceId);
@@ -155,6 +173,11 @@ public class FlightAreaServiceImpl extends AbstractFlightAreaService implements 
                         .build());
     }
 
+    /**
+     * 비행 영역을 디바이스와 동기화합니다.
+     * @param workspaceId 워크스페이스 ID
+     * @param deviceSns 디바이스 시리얼 번호 목록
+     */
     @Override
     public void syncFlightArea(String workspaceId, List<String> deviceSns) {
         for (String deviceSn : deviceSns) {
@@ -170,12 +193,22 @@ public class FlightAreaServiceImpl extends AbstractFlightAreaService implements 
         packageFlightArea(workspaceId);
     }
 
+    /**
+     * 비행 영역을 패키징합니다.
+     * @param workspaceId 워크스페이스 ID
+     * @return 비행 영역 파일 정보
+     */
     @Override
     public FlightAreaFileDTO packageFlightArea(String workspaceId) {
         List<FlightAreaDTO> flightAreas = getFlightAreaList(workspaceId);
         return flightAreaFileService.packageFlightAreaFile(workspaceId, flightAreas);
     }
 
+    /**
+     * 비행 영역을 삭제합니다.
+     * @param workspaceId 워크스페이스 ID
+     * @param areaId 영역 ID
+     */
     @Override
     public void deleteFlightArea(String workspaceId, String areaId) {
         HttpResultResponse response = workspaceElementService.deleteElement(workspaceId, areaId, false);
@@ -194,6 +227,12 @@ public class FlightAreaServiceImpl extends AbstractFlightAreaService implements 
                         .build());
     }
 
+    /**
+     * 비행 영역을 업데이트합니다.
+     * @param workspaceId 워크스페이스 ID
+     * @param areaId 영역 ID
+     * @param param 비행 영역 업데이트 파라미터
+     */
     @Override
     public void updateFlightArea(String workspaceId, String areaId, PutFlightAreaParam param) {
         Float radius = null;
@@ -240,6 +279,12 @@ public class FlightAreaServiceImpl extends AbstractFlightAreaService implements 
 
     }
 
+    /**
+     * 비행 영역 동기화 진행 상황을 처리합니다.
+     * @param request MQTT 이벤트 요청
+     * @param headers 메시지 헤더
+     * @return MQTT 이벤트 응답
+     */
     @Override
     public TopicEventsResponse<MqttReply> flightAreasSyncProgress(TopicEventsRequest<FlightAreasSyncProgress> request, MessageHeaders headers) {
         Optional<DeviceDTO> deviceOpt = deviceRedisService.getDeviceOnline(request.getGateway());
@@ -268,6 +313,12 @@ public class FlightAreaServiceImpl extends AbstractFlightAreaService implements 
         return new TopicEventsResponse<>();
     }
 
+    /**
+     * 비행 영역 드론 위치를 처리합니다.
+     * @param request MQTT 이벤트 요청
+     * @param headers 메시지 헤더
+     * @return MQTT 이벤트 응답
+     */
     @Override
     public TopicEventsResponse<MqttReply> flightAreasDroneLocation(TopicEventsRequest<FlightAreasDroneLocation> request, MessageHeaders headers) {
         Optional<DeviceDTO> deviceOpt = deviceRedisService.getDeviceOnline(request.getGateway());
@@ -283,6 +334,12 @@ public class FlightAreaServiceImpl extends AbstractFlightAreaService implements 
         return new TopicEventsResponse<>();
     }
 
+    /**
+     * 비행 영역 조회 요청을 처리합니다.
+     * @param request MQTT 요청
+     * @param headers 메시지 헤더
+     * @return MQTT 응답
+     */
     @Override
     public TopicRequestsResponse<MqttReply<FlightAreasGetResponse>> flightAreasGet(TopicRequestsRequest<FlightAreasGetRequest> request, MessageHeaders headers) {
         Optional<DeviceDTO> deviceOpt = deviceRedisService.getDeviceOnline(request.getGateway());
@@ -309,6 +366,12 @@ public class FlightAreaServiceImpl extends AbstractFlightAreaService implements 
                         ))));
     }
 
+    /**
+     * 지도 요소를 비행 영역으로 변환합니다.
+     * @param element 지도 그룹 요소
+     * @param property 비행 영역 속성
+     * @return 비행 영역 DTO
+     */
     private FlightAreaDTO element2FlightArea(MapGroupElement element, FlightAreaPropertyDTO property) {
         FlightAreaDTO.FlightAreaDTOBuilder builder = FlightAreaDTO.builder()
                 .areaId(element.getId())

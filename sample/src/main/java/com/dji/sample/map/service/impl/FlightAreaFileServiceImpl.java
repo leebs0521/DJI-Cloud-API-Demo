@@ -31,6 +31,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
+ * 비행 영역 파일 서비스 구현체
+ * 비행 영역 파일의 생성, 저장, 조회를 관리하는 서비스입니다.
  * @author sean
  * @version 1.9
  * @date 2023/11/22
@@ -57,6 +59,11 @@ public class FlightAreaFileServiceImpl implements IFlightAreaFileService {
     @Autowired
     private IFlightAreaPropertyServices flightAreaPropertyServices;
 
+    /**
+     * 파일 ID로 비행 영역 파일을 조회합니다.
+     * @param fileId 파일 ID
+     * @return 비행 영역 파일 정보
+     */
     @Override
     public Optional<FlightAreaFileDTO> getFlightAreaFileByFileId(String fileId) {
         return Optional.ofNullable(mapper.selectOne(Wrappers.lambdaQuery(FlightAreaFileEntity.class)
@@ -64,6 +71,11 @@ public class FlightAreaFileServiceImpl implements IFlightAreaFileService {
                 .map(this::entity2Dto);
     }
 
+    /**
+     * 비행 영역 파일을 저장합니다.
+     * @param file 비행 영역 파일 정보
+     * @return 저장된 파일의 ID
+     */
     @Override
     public Integer saveFlightAreaFile(FlightAreaFileDTO file) {
         FlightAreaFileEntity entity = dto2Entity(file);
@@ -71,6 +83,11 @@ public class FlightAreaFileServiceImpl implements IFlightAreaFileService {
         return id > 0 ? entity.getId() : id;
     }
 
+    /**
+     * 워크스페이스 ID로 최신 파일을 최신이 아닌 상태로 설정합니다.
+     * @param workspaceId 워크스페이스 ID
+     * @return 업데이트된 레코드 수
+     */
     @Override
     public Integer setNonLatestByWorkspaceId(String workspaceId) {
         return mapper.update(FlightAreaFileEntity.builder().latest(false).build(),
@@ -79,6 +96,11 @@ public class FlightAreaFileServiceImpl implements IFlightAreaFileService {
                         .eq(FlightAreaFileEntity::getLatest, true));
     }
 
+    /**
+     * 워크스페이스 ID로 최신 비행 영역 파일을 조회합니다.
+     * @param workspaceId 워크스페이스 ID
+     * @return 최신 비행 영역 파일 정보
+     */
     @Override
     public Optional<FlightAreaFileDTO> getLatestByWorkspaceId(String workspaceId) {
         return Optional.ofNullable(mapper.selectOne(Wrappers.lambdaQuery(FlightAreaFileEntity.class)
@@ -89,6 +111,12 @@ public class FlightAreaFileServiceImpl implements IFlightAreaFileService {
                 .map(this::entity2Dto);
     }
 
+    /**
+     * 비행 영역 파일을 패키징합니다.
+     * @param workspaceId 워크스페이스 ID
+     * @param flightAreas 비행 영역 목록
+     * @return 비행 영역 파일 정보
+     */
     @Override
     public FlightAreaFileDTO packageFlightAreaFile(String workspaceId, List<FlightAreaDTO> flightAreas) {
         Optional<FlightAreaFileDTO> fileOpt = getLatestByWorkspaceId(workspaceId);
@@ -103,6 +131,12 @@ public class FlightAreaFileServiceImpl implements IFlightAreaFileService {
         return file;
     }
 
+    /**
+     * 비행 영역 파일을 생성합니다.
+     * @param workspaceId 워크스페이스 ID
+     * @param flightAreas 비행 영역 목록
+     * @return 생성된 비행 영역 파일 정보
+     */
     private FlightAreaFileDTO generateFlightAreaFile(String workspaceId, List<FlightAreaDTO> flightAreas) {
 
         FlightAreaJson flightAreaJson = new FlightAreaJson()
@@ -133,6 +167,11 @@ public class FlightAreaFileServiceImpl implements IFlightAreaFileService {
 
     }
 
+    /**
+     * 비행 영역 특성을 생성합니다.
+     * @param area 비행 영역 정보
+     * @return 비행 영역 특성
+     */
     private FlightAreaFeature generateFlightAreaFeature(FlightAreaDTO area) {
         GeometrySubTypeEnum subType = null;
         Float radius = 0f;
@@ -152,6 +191,11 @@ public class FlightAreaFileServiceImpl implements IFlightAreaFileService {
                 .setGeometry(objectMapper.convertValue(area.getContent().getGeometry(), FlightAreaGeometry.class));
     }
 
+    /**
+     * 엔티티를 DTO로 변환합니다.
+     * @param entity 비행 영역 파일 엔티티
+     * @return 비행 영역 파일 DTO
+     */
     private FlightAreaFileDTO entity2Dto(FlightAreaFileEntity entity) {
         if (Objects.isNull(entity)) {
             return null;
@@ -167,6 +211,11 @@ public class FlightAreaFileServiceImpl implements IFlightAreaFileService {
                 .build();
     }
 
+    /**
+     * DTO를 엔티티로 변환합니다.
+     * @param dto 비행 영역 파일 DTO
+     * @return 비행 영역 파일 엔티티
+     */
     private FlightAreaFileEntity dto2Entity(FlightAreaFileDTO dto) {
         if (dto == null) {
             return null;

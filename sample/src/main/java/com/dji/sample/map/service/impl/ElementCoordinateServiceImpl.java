@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * 요소 좌표 서비스 구현체
+ * 지도 요소의 좌표 정보를 관리하는 서비스입니다.
  * @author sean
  * @version 0.2
  * @date 2021/11/29
@@ -25,6 +27,11 @@ public class ElementCoordinateServiceImpl implements IElementCoordinateService {
     @Autowired
     private IElementCoordinateMapper mapper;
 
+    /**
+     * 요소 ID로 좌표 목록을 조회합니다.
+     * @param elementId 요소 ID
+     * @return 좌표 목록
+     */
     @Override
     public List<ElementCoordinate> getCoordinateByElementId(String elementId) {
         return mapper.selectList(
@@ -35,6 +42,12 @@ public class ElementCoordinateServiceImpl implements IElementCoordinateService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 좌표 목록을 저장합니다.
+     * @param coordinateList 좌표 목록
+     * @param elementId 요소 ID
+     * @return 저장 성공 여부
+     */
     @Override
     public Boolean saveCoordinate(List<ElementCoordinate> coordinateList, String elementId) {
         for (ElementCoordinate coordinate : coordinateList) {
@@ -49,6 +62,11 @@ public class ElementCoordinateServiceImpl implements IElementCoordinateService {
         return true;
     }
 
+    /**
+     * 요소 ID로 모든 좌표를 삭제합니다.
+     * @param elementId 요소 ID
+     * @return 삭제 성공 여부
+     */
     @Override
     public Boolean deleteCoordinateByElementId(String elementId) {
         return mapper.delete(new LambdaUpdateWrapper<ElementCoordinateEntity>()
@@ -56,9 +74,9 @@ public class ElementCoordinateServiceImpl implements IElementCoordinateService {
     }
 
     /**
-     * Convert database entity objects into coordinate data transfer object.
-     * @param entity
-     * @return
+     * 데이터베이스 엔티티 객체를 좌표 데이터 전송 객체로 변환합니다.
+     * @param entity 좌표 엔티티
+     * @return 좌표 객체
      */
     private ElementCoordinate entityConvertToDto(ElementCoordinateEntity entity) {
         if (entity == null) {
@@ -72,9 +90,9 @@ public class ElementCoordinateServiceImpl implements IElementCoordinateService {
     }
 
     /**
-     * Convert the received coordinate object into a database entity object.
-     * @param coordinate
-     * @return
+     * 받은 좌표 객체를 데이터베이스 엔티티 객체로 변환합니다.
+     * @param coordinate 좌표 객체
+     * @return 좌표 엔티티
      */
     private ElementCoordinateEntity dtoConvertToEntity(ElementCoordinate coordinate) {
         ElementCoordinateEntity.ElementCoordinateEntityBuilder builder = ElementCoordinateEntity.builder();

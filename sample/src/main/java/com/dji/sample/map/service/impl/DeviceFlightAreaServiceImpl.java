@@ -16,6 +16,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
+ * 디바이스 비행 영역 서비스 구현체
+ * 디바이스와 비행 영역 간의 동기화 상태를 관리하는 서비스입니다.
  * @author sean
  * @version 1.9
  * @date 2023/11/23
@@ -27,6 +29,12 @@ public class DeviceFlightAreaServiceImpl implements IDeviceFlightAreaService {
     @Autowired
     private IDeviceFlightAreaMapper mapper;
 
+    /**
+     * 디바이스의 비행 영역 정보를 조회합니다.
+     * @param workspaceId 워크스페이스 ID
+     * @param deviceSn 디바이스 시리얼 번호
+     * @return 디바이스 비행 영역 정보
+     */
     @Override
     public Optional<DeviceFlightAreaDTO> getDeviceFlightAreaByDevice(String workspaceId, String deviceSn) {
         return Optional.ofNullable(mapper.selectOne(Wrappers.lambdaQuery(DeviceFlightAreaEntity.class)
@@ -35,6 +43,11 @@ public class DeviceFlightAreaServiceImpl implements IDeviceFlightAreaService {
                 .map(this::entity2Dto);
     }
 
+    /**
+     * 디바이스 파일 정보를 업데이트합니다.
+     * @param deviceFile 디바이스 파일 정보
+     * @return 업데이트 성공 여부
+     */
     @Override
     public Boolean updateDeviceFile(DeviceFlightAreaDTO deviceFile) {
         return mapper.update(dto2Entity(deviceFile),
@@ -43,6 +56,11 @@ public class DeviceFlightAreaServiceImpl implements IDeviceFlightAreaService {
                         .eq(DeviceFlightAreaEntity::getDeviceSn, deviceFile.getDeviceSn())) > 0;
     }
 
+    /**
+     * 디바이스 파일 정보를 업데이트하거나 새로 저장합니다.
+     * @param deviceFile 디바이스 파일 정보
+     * @return 저장/업데이트 성공 여부
+     */
     @Override
     public Boolean updateOrSaveDeviceFile(DeviceFlightAreaDTO deviceFile) {
         if (getDeviceFlightAreaByDevice(deviceFile.getWorkspaceId(), deviceFile.getDeviceSn()).isPresent()) {
@@ -53,6 +71,11 @@ public class DeviceFlightAreaServiceImpl implements IDeviceFlightAreaService {
         return mapper.insert(entity) > 0;
     }
 
+    /**
+     * DTO를 엔티티로 변환합니다.
+     * @param dto 디바이스 비행 영역 DTO
+     * @return 디바이스 비행 영역 엔티티
+     */
     private DeviceFlightAreaEntity dto2Entity(DeviceFlightAreaDTO dto) {
         if (Objects.isNull(dto)) {
             return null;
@@ -66,6 +89,11 @@ public class DeviceFlightAreaServiceImpl implements IDeviceFlightAreaService {
                 .build();
     }
 
+    /**
+     * 엔티티를 DTO로 변환합니다.
+     * @param entity 디바이스 비행 영역 엔티티
+     * @return 디바이스 비행 영역 DTO
+     */
     private DeviceFlightAreaDTO entity2Dto(DeviceFlightAreaEntity entity) {
         if (Objects.isNull(entity)) {
             return null;

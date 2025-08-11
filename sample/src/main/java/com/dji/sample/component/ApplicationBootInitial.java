@@ -64,7 +64,7 @@ public class ApplicationBootInitial implements CommandLineRunner {
                         SDKManager.registerDevice(device.getDeviceSn(), device.getChildDeviceSn(), device.getDomain(),
                                 device.getType(), device.getSubType(), device.getThingVersion(),
                                 // 자식 디바이스의 Thing 버전 조회 (없으면 null)
-                                deviceRedisService.getDeviceOnline(device.getChildDeviceSn()).map(DeviceDTO::getThingVersion).orElse(null)))));
+                                deviceRedisService.getDeviceOnline(device.getChildDeviceSn()).map(DeviceDTO::getThingVersion).orElse(null))));
 
     }
 }

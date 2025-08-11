@@ -17,6 +17,39 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * 그룹 요소 서비스 구현체
+ * 
+ * DJI Cloud API의 그룹 요소 관리를 위한 서비스 구현 클래스입니다.
+ * 이 클래스는 그룹에 속한 맵 요소들의 CRUD 작업을 처리합니다.
+ * 
+ * 1. 그룹 요소 조회 기능
+ *    - 그룹별 요소 목록 조회 및 좌표 정보 포함
+ *    - 개별 요소 상세 조회
+ * 
+ * 2. 그룹 요소 관리 기능
+ *    - 요소 생성 및 그룹에 저장
+ *    - 요소 수정 및 좌표 정보 업데이트
+ *    - 요소 삭제
+ * 
+ * 3. 데이터 변환 기능
+ *    - 엔티티와 DTO 간 변환
+ *    - 좌표 정보 추가 및 관리
+ * 
+ * 4. 트랜잭션 관리
+ *    - @Transactional 어노테이션으로 트랜잭션 보장
+ *    - 요소와 좌표 정보의 일관성 유지
+ * 
+ * 주요 용도:
+ * - 그룹별 맵 요소 CRUD 작업 처리
+ * - 그룹-요소 관계 관리
+ * - 맵 요소 분류 및 정리
+ * - 그룹별 요소 접근 제어
+ * 
+ * 사용 예시:
+ * - 그룹에 맵 요소 추가/제거
+ * - 그룹별 요소 목록 관리
+ * - 요소별 그룹 소속 변경
+ * 
  * @author sean
  * @version 0.2
  * @date 2021/11/29
@@ -25,69 +58,123 @@ import java.util.Optional;
 @Transactional
 public class GroupElementServiceImpl implements IGroupElementService {
 
+    /**
+     * 그룹 요소 데이터 접근 객체
+     * 
+     * 그룹 요소 엔티티의 데이터베이스 접근을 담당합니다.
+     * MyBatis-Plus를 사용하여 CRUD 작업을 수행합니다.
+     */
     @Autowired
     private IGroupElementMapper mapper;
 
+    /**
+     * 요소 좌표 서비스
+     * 
+     * 맵 요소의 좌표 정보 관리를 담당합니다.
+     * 요소 생성/수정 시 좌표 정보를 함께 처리합니다.
+     */
     @Autowired
     private IElementCoordinateService elementCoordinateService;
 
+    /**
+     * 그룹 ID를 기반으로 해당 그룹의 모든 요소들을 조회합니다.
+     * 각 요소의 좌표 정보도 함께 포함하여 반환합니다.
+     * 
+     * @param groupId 조회할 그룹의 고유 식별자
+     * @return 그룹에 속한 맵 요소 목록 (좌표 정보 포함)
+     */
     @Override
     public List<MapGroupElement> getElementsByGroupId(String groupId) {
+        // 그룹 ID로 요소 엔티티 목록 조회
         List<GroupElementEntity> elementList = mapper.selectList(
                 new LambdaQueryWrapper<GroupElementEntity>()
                         .eq(GroupElementEntity::getGroupId, groupId));
 
         List<MapGroupElement> groupElementList = new ArrayList<>();
         for (GroupElementEntity elementEntity : elementList) {
+            // 엔티티를 DTO로 변환
             MapGroupElement groupElement = this.entityConvertToDto(elementEntity);
             groupElementList.add(groupElement);
 
+            // 요소에 좌표 정보 추가
             this.addCoordinateToElement(groupElement, elementEntity);
         }
         return groupElementList;
     }
 
+    /**
+     * 새로운 맵 요소를 생성하고 지정된 그룹에 저장합니다.
+     * 요소의 좌표 정보도 함께 저장합니다.
+     * 
+     * @param groupId 요소를 저장할 그룹의 고유 식별자
+     * @param elementCreate 생성할 맵 요소의 정보
+     * @return 저장 성공 여부
+     */
     @Override
     public Boolean saveElement(String groupId, CreateMapElementRequest elementCreate) {
+        // 기존 요소 존재 여부 확인
         Optional<GroupElementEntity> groupElementOpt = this.getEntityByElementId(elementCreate.getId());
 
         if (groupElementOpt.isPresent()) {
             return false;
         }
+        
+        // DTO를 엔티티로 변환하고 그룹 ID 설정
         GroupElementEntity groupElement = this.createDtoConvertToEntity(elementCreate);
         groupElement.setGroupId(groupId);
 
+        // 요소 엔티티 저장
         boolean saveElement = mapper.insert(groupElement) > 0;
         if (!saveElement) {
             return false;
         }
-        // save coordinate
+        
+        // 요소의 좌표 정보 저장
         return elementCoordinateService.saveCoordinate(
                 elementCreate.getResource().getContent().getGeometry().convertToList(), elementCreate.getId());
     }
 
+    /**
+     * 요소 ID를 기반으로 요소 정보를 조회하고 업데이트합니다.
+     * 기존 좌표 정보를 삭제하고 새로운 좌표 정보를 저장합니다.
+     * 
+     * @param elementId 수정할 요소의 고유 식별자
+     * @param elementUpdate 업데이트할 요소 정보
+     * @param username 요소를 수정하는 사용자의 이름
+     * @return 수정 성공 여부
+     */
     @Override
     public Boolean updateElement(String elementId, UpdateMapElementRequest elementUpdate, String username) {
+        // 기존 요소 존재 여부 확인
         Optional<GroupElementEntity> groupElementOpt = this.getEntityByElementId(elementId);
         if (groupElementOpt.isEmpty()) {
             return false;
         }
 
+        // 엔티티 업데이트
         GroupElementEntity groupElement = groupElementOpt.get();
         groupElement.setUsername(username);
         this.updateEntityWithDto(elementUpdate, groupElement);
+        
         boolean update = mapper.updateById(groupElement) > 0;
         if (!update) {
             return false;
         }
-        // delete all coordinates according to element id.
+        
+        // 기존 좌표 정보 삭제
         boolean delCoordinate = elementCoordinateService.deleteCoordinateByElementId(elementId);
-        // save coordinate
+        // 새로운 좌표 정보 저장
         boolean saveCoordinate = elementCoordinateService.saveCoordinate(
                 elementUpdate.getContent().getGeometry().convertToList(), elementId);
         return delCoordinate & saveCoordinate;
     }
 
+    /**
+     * 요소 ID를 기반으로 해당 요소를 삭제합니다.
+     * 
+     * @param elementId 삭제할 요소의 고유 식별자
+     * @return 삭제 성공 여부
+     */
     @Override
     public Boolean deleteElement(String elementId) {
         Optional<GroupElementEntity> groupElementOpt = this.getEntityByElementId(elementId);

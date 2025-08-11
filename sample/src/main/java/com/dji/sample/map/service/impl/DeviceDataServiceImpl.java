@@ -20,6 +20,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
+ * 디바이스 데이터 서비스 구현체
+ * 디바이스의 데이터 상태와 비행 영역 정보를 관리하는 서비스입니다.
  * @author sean
  * @version 1.9
  * @date 2023/11/24
@@ -36,6 +38,11 @@ public class DeviceDataServiceImpl implements IDeviceDataService {
     @Autowired
     private IDeviceFlightAreaService deviceFlightAreaService;
 
+    /**
+     * 워크스페이스의 모든 디바이스 데이터 상태를 조회합니다.
+     * @param workspaceId 워크스페이스 ID
+     * @return 디바이스 데이터 상태 목록
+     */
     @Override
     public List<DeviceDataStatusDTO> getDevicesDataStatus(String workspaceId) {
         List<DeviceDTO> devices = deviceService.getDevicesByParams(DeviceQueryParam.builder()
@@ -54,6 +61,12 @@ public class DeviceDataServiceImpl implements IDeviceDataService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 특정 디바이스의 비행 영역 상태를 조회합니다.
+     * @param workspaceId 워크스페이스 ID
+     * @param deviceSn 디바이스 시리얼 번호
+     * @return 디바이스 비행 영역 정보
+     */
     @Override
     public Optional<DeviceFlightAreaDTO> getDeviceStatus(String workspaceId, String deviceSn) {
         return deviceFlightAreaService.getDeviceFlightAreaByDevice(workspaceId, deviceSn)

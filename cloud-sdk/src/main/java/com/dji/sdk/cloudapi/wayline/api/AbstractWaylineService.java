@@ -169,8 +169,7 @@ public abstract class AbstractWaylineService {
         return servicesPublish.publish(
                 gateway.getGatewaySn(),
                 WaylineMethodEnum.FLIGHTTASK_UNDO.getMethod(),
-                request,
-                request.getFlightId());
+                request);
     }
 
     /**
@@ -275,8 +274,13 @@ public abstract class AbstractWaylineService {
      * @param request 작업 준비 요청
      */
     private void validPrepareParam(FlighttaskPrepareRequest request) {
-        if (Common.isBlank(request.getFlightId())) {
-            throw new CloudSDKException(CloudSDKErrorEnum.INVALID_PARAMETER);
+        if (null == request.getExecuteTime()
+                && (TaskTypeEnum.IMMEDIATE == request.getTaskType() || TaskTypeEnum.TIMED == request.getTaskType())) {
+            throw new CloudSDKException(CloudSDKErrorEnum.INVALID_PARAMETER, "Execute time must not be null.");
+        }
+        if (TaskTypeEnum.CONDITIONAL == request.getTaskType()) {
+            Common.validateModel(request.getReadyConditions());
         }
     }
+
 }
