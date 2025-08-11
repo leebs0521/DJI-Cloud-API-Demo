@@ -23,15 +23,11 @@ import org.springframework.web.socket.server.HandshakeHandler;
 @Configuration
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
 
-    /**
-     * WebSocket 핸드셰이크 핸들러 (선택적)
-     */
+    /** WebSocket 핸드셰이크 핸들러 (선택적) */
     @Autowired(required = false)
     private HandshakeHandler handshakeHandler;
 
-    /**
-     * WebSocket 핸들러 데코레이터 팩토리
-     */
+    /** WebSocket 핸들러 데코레이터 팩토리 */
     @Autowired
     private WebSocketHandlerDecoratorFactory webSocketHandlerDecoratorFactory;
 
@@ -44,7 +40,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
      */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // Set the WebSocket connection address
+        // WebSocket 연결 주소 설정
         registry.addEndpoint("/api/v1/ws").setAllowedOriginPatterns("*")
                 .setHandshakeHandler(handshakeHandler);
     }

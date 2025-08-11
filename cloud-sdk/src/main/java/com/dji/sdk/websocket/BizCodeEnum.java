@@ -16,49 +16,31 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(enumAsRef = true, description = "Pilot2 will receive these bizCode, and then do corresponding processing according to the value.")
 public enum BizCodeEnum {
 
-    /**
-     * 디바이스 온라인 알림
-     */
+    /** 디바이스 온라인 알림 */
     DEVICE_ONLINE("device_online"),
 
-    /**
-     * 디바이스 오프라인 알림
-     */
+    /** 디바이스 오프라인 알림 */
     DEVICE_OFFLINE("device_offline"),
 
-    /**
-     * 디바이스 토폴로지 업데이트 알림
-     */
+    /** 디바이스 토폴로지 업데이트 알림 */
     DEVICE_UPDATE_TOPO("device_update_topo"),
 
-    /**
-     * 디바이스 OSD (On-Screen Display) 정보 알림
-     */
+    /** 디바이스 OSD (On-Screen Display) 정보 알림 */
     DEVICE_OSD("device_osd"),
 
-    /**
-     * 맵 요소 생성 알림
-     */
+    /** 맵 요소 생성 알림 */
     MAP_ELEMENT_CREATE("map_element_create"),
 
-    /**
-     * 맵 요소 업데이트 알림
-     */
+    /** 맵 요소 업데이트 알림 */
     MAP_ELEMENT_UPDATE("map_element_update"),
 
-    /**
-     * 맵 요소 삭제 알림
-     */
+    /** 맵 요소 삭제 알림 */
     MAP_ELEMENT_DELETE("map_element_delete"),
 
-    /**
-     * 맵 그룹 새로고침 알림
-     */
+    /** 맵 그룹 새로고침 알림 */
     MAP_GROUP_REFRESH("map_group_refresh");
 
-    /**
-     * 비즈니스 코드 문자열
-     */
+    /** 비즈니스 코드 문자열 */
     private final String code;
 
     /**

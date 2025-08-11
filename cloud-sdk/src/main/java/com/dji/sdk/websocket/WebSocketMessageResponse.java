@@ -20,31 +20,23 @@ import javax.validation.constraints.NotNull;
 @Schema(description = "The format of WebSocket messages that the pilot can receive.")
 public class WebSocketMessageResponse<T> {
 
-    /**
-     * WebSocket 메시지 식별자 (비즈니스 코드)
-     */
+    /** WebSocket 메시지 식별자 (비즈니스 코드) */
     @JsonProperty("biz_code")
     @NotNull
     @Schema(description = "webSocket messages identity", implementation = BizCodeEnum.class)
     private String bizCode;
 
-    /**
-     * WebSocket 메시지 버전
-     */
+    /** WebSocket 메시지 버전 */
     @Schema(description = "webSocket messages version")
     private String version = "1.0";
 
-    /**
-     * 타임스탬프 (밀리초)
-     */
+    /** 타임스탬프 (밀리초) */
     @NotNull
     @Min(123456789012L)
     @Schema(description = "timestamp (milliseconds)")
     private Long timestamp;
 
-    /**
-     * 비즈니스 기능에 해당하는 데이터
-     */
+    /** 비즈니스 기능에 해당하는 데이터 */
     @NotNull
     @Schema(description = "Data corresponding to business functions")
     private T data;

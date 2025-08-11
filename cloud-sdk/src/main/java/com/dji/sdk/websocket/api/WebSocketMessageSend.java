@@ -25,9 +25,7 @@ import java.util.Collection;
  */
 public class WebSocketMessageSend {
 
-    /**
-     * 로깅을 위한 Logger 인스턴스
-     */
+    /** 로깅을 위한 Logger 인스턴스 */
     private static final Logger log = LoggerFactory.getLogger(WebSocketMessageSend.class);
 
     /**

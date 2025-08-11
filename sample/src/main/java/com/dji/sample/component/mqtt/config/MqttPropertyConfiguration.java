@@ -18,7 +18,9 @@ import org.springframework.util.StringUtils;
 import java.util.Map;
 
 /**
- *
+ * MQTT 프로퍼티 설정 클래스
+ * MQTT 클라이언트 연결 설정과 관련된 프로퍼티를 관리
+ * 
  * @author sean.zhou
  * @date 2021/11/10
  * @version 0.1
@@ -28,15 +30,20 @@ import java.util.Map;
 @ConfigurationProperties
 public class MqttPropertyConfiguration {
 
+    /** MQTT 클라이언트 옵션 맵 */
     private static Map<MqttUseEnum, MqttClientOptions> mqtt;
 
+    /**
+     * MQTT 클라이언트 옵션 맵을 설정합니다.
+     * @param mqtt MQTT 클라이언트 옵션 맵
+     */
     public void setMqtt(Map<MqttUseEnum, MqttClientOptions> mqtt) {
         MqttPropertyConfiguration.mqtt = mqtt;
     }
 
     /**
-     * Get the configuration options of the basic link of the mqtt client.
-     * @return
+     * 기본 링크의 MQTT 클라이언트 설정 옵션을 가져옵니다.
+     * @return 기본 MQTT 클라이언트 옵션
      */
     static MqttClientOptions getBasicClientOptions() {
         if (!mqtt.containsKey(MqttUseEnum.BASIC)) {
@@ -46,17 +53,17 @@ public class MqttPropertyConfiguration {
     }
 
     /**
-     * Get the mqtt address of the basic link.
-     * @return
+     * 기본 링크의 MQTT 주소를 가져옵니다.
+     * @return 기본 MQTT 주소
      */
     public static String getBasicMqttAddress() {
         return getMqttAddress(getBasicClientOptions());
     }
 
     /**
-     * Splice the mqtt address according to the parameters of different clients.
-     * @param options
-     * @return
+     * 다양한 클라이언트의 매개변수에 따라 MQTT 주소를 조합합니다.
+     * @param options MQTT 클라이언트 옵션
+     * @return 조합된 MQTT 주소
      */
     private static String getMqttAddress(MqttClientOptions options) {
         StringBuilder addr = new StringBuilder()
@@ -64,6 +71,7 @@ public class MqttPropertyConfiguration {
                 .append(options.getHost().trim())
                 .append(":")
                 .append(options.getPort());
+        // WebSocket 프로토콜인 경우 경로 추가
         if ((options.getProtocol() == MqttProtocolEnum.WS || options.getProtocol() == MqttProtocolEnum.WSS)
                 && StringUtils.hasText(options.getPath())) {
             addr.append(options.getPath());
@@ -72,12 +80,12 @@ public class MqttPropertyConfiguration {
     }
 
     /**
-     * Get the connection parameters of the mqtt client of the drc link.
-     * @param clientId
-     * @param username
-     * @param age   The validity period of the token. unit: s
-     * @param map   Custom data added in token.
-     * @return
+     * DRC 링크의 MQTT 클라이언트 연결 매개변수를 가져옵니다.
+     * @param clientId 클라이언트 ID
+     * @param username 사용자명
+     * @param age 토큰의 유효 기간 (초 단위)
+     * @param map 토큰에 추가할 사용자 정의 데이터
+     * @return DRC 모드 MQTT 브로커 설정
      */
     public static DrcModeMqttBroker getMqttBrokerWithDrc(String clientId, String username, Long age, Map<String, ?> map) {
         if (!mqtt.containsKey(MqttUseEnum.DRC)) {
@@ -85,6 +93,7 @@ public class MqttPropertyConfiguration {
         }
         Algorithm algorithm = JwtUtil.algorithm;
 
+        // JWT 토큰 생성
         String token = JwtUtil.createToken(map, age, algorithm, null, null);
 
         return new DrcModeMqttBroker()
@@ -96,7 +105,10 @@ public class MqttPropertyConfiguration {
                 .setEnableTls(false);
     }
 
-
+    /**
+     * MQTT 연결 옵션을 생성합니다.
+     * @return MQTT 연결 옵션
+     */
     @Bean
     public MqttConnectOptions mqttConnectOptions() {
         MqttClientOptions customizeOptions = getBasicClientOptions();
@@ -110,6 +122,10 @@ public class MqttPropertyConfiguration {
         return mqttConnectOptions;
     }
 
+    /**
+     * MQTT 클라이언트 팩토리를 생성합니다.
+     * @return MQTT 클라이언트 팩토리
+     */
     @Bean
     public MqttPahoClientFactory mqttClientFactory() {
         DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();

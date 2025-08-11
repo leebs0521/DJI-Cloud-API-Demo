@@ -27,6 +27,51 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
+ * 로그 파일 관리 서비스 구현체
+ * 
+ * DJI Cloud API의 로그 파일 관리를 위한 서비스 구현체입니다.
+ * 이 클래스는 다음과 같은 주요 기능들을 구현합니다:
+ * 
+ * 1. 로그 파일 정보 관리
+ *    - 로그 파일 정보 저장 및 조회
+ *    - 로그 ID별 파일 목록 관리
+ *    - 파일 메타데이터 관리
+ *    - 파일 상태 추적
+ * 
+ * 2. 로그 파일 업로드 관리
+ *    - 로그 파일 업로드 시작 처리
+ *    - 업로드 진행률 업데이트
+ *    - 업로드 완료 상태 관리
+ *    - 업로드 실패 처리
+ * 
+ * 3. OSS 스토리지 연동
+ *    - 로그 파일 OSS 업로드
+ *    - OSS 파일 URL 생성
+ *    - OSS 파일 삭제
+ *    - 스토리지 정리
+ * 
+ * 4. 로그 파일 인덱스 관리
+ *    - 로그 파일 인덱스 생성
+ *    - 인덱스 정보 조회
+ *    - 인덱스 삭제
+ *    - 인덱스 업데이트
+ * 
+ * 5. 데이터 변환 및 매핑
+ *    - 엔티티를 DTO로 변환
+ *    - 업로드 진행 파일을 엔티티로 변환
+ *    - 파일 메타데이터 매핑
+ *    - 데이터 유효성 검증
+ * 
+ * 주요 의존성:
+ * - ILogsFileMapper: 로그 파일 데이터베이스 접근
+ * - ILogsFileIndexService: 로그 파일 인덱스 관리
+ * - OssServiceContext: OSS 스토리지 서비스
+ * - FileUploadStartFile: 파일 업로드 시작 정보
+ * - FileUploadProgressFile: 파일 업로드 진행 정보
+ * 
+ * 이 클래스는 DJI 로그 파일을 OSS 스토리지에
+ * 안전하고 효율적으로 관리하는 서비스입니다.
+ * 
  * @author sean
  * @version 1.2
  * @date 2022/9/7
@@ -47,6 +92,12 @@ public class LogsFileServiceImpl implements ILogsFileService {
     @Autowired
     private OssServiceContext ossServiceContext;
 
+    /**
+     * 로그 ID로 로그 파일 정보를 조회합니다.
+     * 
+     * @param logsId 로그 ID
+     * @return 로그 파일 DTO 목록
+     */
     @Override
     public List<LogsFileDTO> getLogsFileInfoByLogsId(String logsId) {
         return mapper.selectList(
@@ -55,6 +106,12 @@ public class LogsFileServiceImpl implements ILogsFileService {
                 .map(this::entity2Dto).collect(Collectors.toList());
     }
 
+    /**
+     * 로그 파일 엔티티를 DTO로 변환합니다.
+     * 
+     * @param entity 로그 파일 엔티티
+     * @return 로그 파일 DTO
+     */
     private LogsFileDTO entity2Dto(LogsFileEntity entity) {
         if (Objects.isNull(entity)) {
             return null;
@@ -71,6 +128,12 @@ public class LogsFileServiceImpl implements ILogsFileService {
                 .build();
     }
 
+    /**
+     * 로그 ID로 로그 파일을 조회합니다.
+     * 
+     * @param logsId 로그 ID
+     * @return 로그 파일 업로드 DTO 목록
+     */
     @Override
     public List<LogsFileUploadDTO> getLogsFileByLogsId(String logsId) {
         List<LogsFileDTO> logsFiles = this.getLogsFileInfoByLogsId(logsId);
@@ -80,6 +143,13 @@ public class LogsFileServiceImpl implements ILogsFileService {
         return logsFileIndexService.getFileIndexByFileIds(logsFiles);
     }
 
+    /**
+     * 로그 파일을 삽입합니다.
+     * 
+     * @param file 파일 업로드 시작 정보
+     * @param logsId 로그 ID
+     * @return 삽입 성공 여부
+     */
     @Override
     public Boolean insertFile(FileUploadStartFile file, String logsId) {
         LogsFileEntity entity = LogsFileEntity.builder()
@@ -93,6 +163,7 @@ public class LogsFileServiceImpl implements ILogsFileService {
         if (!insert) {
             return false;
         }
+        // 로그 파일 인덱스 삽입
         for (LogFileIndex logsFile : file.getList()) {
             insert = logsFileIndexService.insertFileIndex(logsFile, file.getDeviceSn(), Integer.valueOf(file.getModule().getDomain()), entity.getFileId());
             if (!insert) {
@@ -102,6 +173,11 @@ public class LogsFileServiceImpl implements ILogsFileService {
         return true;
     }
 
+    /**
+     * 로그 ID로 파일을 삭제합니다.
+     * 
+     * @param logsId 로그 ID
+     */
     @Override
     public void deleteFileByLogsId(String logsId) {
         List<LogsFileDTO> logsFiles = this.getLogsFileInfoByLogsId(logsId);
@@ -111,6 +187,7 @@ public class LogsFileServiceImpl implements ILogsFileService {
         mapper.delete(new LambdaUpdateWrapper<LogsFileEntity>().eq(LogsFileEntity::getLogsId, logsId));
         List<String> fileIds = new ArrayList<>();
         logsFiles.forEach(file -> {
+            // 업로드 완료된 파일은 OSS에서도 삭제
             if (file.getStatus()) {
                 ossService.deleteObject(OssConfiguration.bucket, file.getObjectKey());
             }
@@ -120,6 +197,12 @@ public class LogsFileServiceImpl implements ILogsFileService {
         logsFileIndexService.deleteFileIndexByFileIds(fileIds);
     }
 
+    /**
+     * 로그 파일을 업데이트합니다.
+     * 
+     * @param logsId 로그 ID
+     * @param fileReceiver 파일 업로드 진행 정보
+     */
     @Override
     public void updateFile(String logsId, FileUploadProgressFile fileReceiver) {
         List<LogsFileDTO> logsFiles = this.getLogsFileInfoByLogsId(logsId);
@@ -131,12 +214,25 @@ public class LogsFileServiceImpl implements ILogsFileService {
                         .eq(LogsFileEntity::getDeviceSn, fileReceiver.getDeviceSn()));
     }
 
+    /**
+     * 로그 파일 업로드 상태를 업데이트합니다.
+     * 
+     * @param logsId 로그 ID
+     * @param isUploaded 업로드 완료 여부
+     */
     @Override
     public void updateFileUploadStatus(String logsId, Boolean isUploaded) {
         mapper.update(LogsFileEntity.builder().status(isUploaded).build(),
                 new LambdaUpdateWrapper<LogsFileEntity>().eq(LogsFileEntity::getLogsId, logsId));
     }
 
+    /**
+     * 로그 파일 URL을 조회합니다.
+     * 
+     * @param logsId 로그 ID
+     * @param fileId 파일 ID
+     * @return 로그 파일 URL
+     */
     @Override
     public URL getLogsFileUrl(String logsId, String fileId) {
         LogsFileEntity logsFile = mapper.selectOne(new LambdaQueryWrapper<LogsFileEntity>()
@@ -147,6 +243,12 @@ public class LogsFileServiceImpl implements ILogsFileService {
         return ossService.getObjectUrl(OssConfiguration.bucket, logsFile.getObjectKey());
     }
 
+    /**
+     * 파일 업로드 진행 정보를 엔티티로 변환합니다.
+     * 
+     * @param receiver 파일 업로드 진행 정보
+     * @return 로그 파일 엔티티
+     */
     private LogsFileEntity receiver2Entity(FileUploadProgressFile receiver) {
         if (Objects.isNull(receiver)) {
             return null;

@@ -20,9 +20,7 @@ import org.springframework.web.socket.handler.WebSocketHandlerDecorator;
  */
 public class WebSocketDefaultHandler extends WebSocketHandlerDecorator {
 
-    /**
-     * 로깅을 위한 Logger 인스턴스
-     */
+    /** 로깅을 위한 Logger 인스턴스 */
     private static final Logger log = LoggerFactory.getLogger(WebSocketDefaultHandler.class);
 
     /**

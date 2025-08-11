@@ -21,6 +21,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 /**
+ * MinIO 서비스 구현 클래스
+ * 
+ * MinIO(오픈소스 객체 저장소)에 대한 구현을 제공합니다.
+ * MinIO의 AssumeRole 기능을 사용한 임시 자격 증명과 객체 관리 기능을 제공합니다.
+ * 
  * @author sean
  * @version 0.3
  * @date 2021/12/23
@@ -29,6 +34,7 @@ import java.util.Objects;
 @Slf4j
 public class MinIOServiceImpl implements IOssService {
 
+    /** MinIO 클라이언트 */
     private MinioClient client;
     
     @Override
@@ -39,6 +45,7 @@ public class MinIOServiceImpl implements IOssService {
     @Override
     public CredentialsToken getCredentials() {
         try {
+            // MinIO AssumeRole 제공자 생성
             AssumeRoleProvider provider = new AssumeRoleProvider(OssConfiguration.endpoint, OssConfiguration.accessKey,
                     OssConfiguration.secretKey, Math.toIntExact(OssConfiguration.expire),
                     null, OssConfiguration.region, null, null, null, null);
@@ -95,6 +102,7 @@ public class MinIOServiceImpl implements IOssService {
     @Override
     public void putObject(String bucket, String objectKey, InputStream input) {
         try {
+            // 파일이 이미 존재하는지 확인
             client.statObject(StatObjectArgs.builder().bucket(bucket).object(objectKey).build());
             throw new RuntimeException("The filename already exists.");
         } catch (MinioException | InvalidKeyException | IOException | NoSuchAlgorithmException e) {
@@ -110,6 +118,9 @@ public class MinIOServiceImpl implements IOssService {
         }
     }
 
+    /**
+     * MinIO 클라이언트를 생성합니다.
+     */
     public void createClient() {
         if (Objects.nonNull(this.client)) {
             return;

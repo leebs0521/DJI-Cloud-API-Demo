@@ -1,6 +1,29 @@
 package com.dji.sample.manage.service;
 
 /**
+ * 요청 설정 관리 서비스 인터페이스
+ * 
+ * DJI Cloud API의 요청 설정 관리를 위한 서비스 인터페이스입니다.
+ * 이 인터페이스는 다음과 같은 주요 기능들을 제공합니다:
+ * 
+ * 1. 요청 설정 정보 관리
+ *    - API 요청에 필요한 설정 파라미터 조회
+ *    - 요청 설정 정보 제공
+ *    - 설정 파라미터 관리
+ * 
+ * 2. 설정 메서드 지원
+ *    - config 메서드에 필요한 파라미터 제공
+ *    - 요청 설정 정보 표준화
+ *    - 설정 정보 일관성 보장
+ * 
+ * 3. 요청 최적화 지원
+ *    - 요청 설정을 통한 성능 최적화
+ *    - 요청 파라미터 표준화
+ *    - 요청 설정 정보 캐싱
+ * 
+ * 이 인터페이스는 DJI Cloud API의 요청 설정을
+ * 체계적으로 관리하고 제공할 수 있도록 지원합니다.
+ * 
  * @author sean
  * @version 1.3
  * @date 2022/11/10
@@ -8,8 +31,12 @@ package com.dji.sample.manage.service;
 public interface IRequestsConfigService {
 
     /**
-     * Get the parameters required by config method.
-     * @return
+     * 설정 메서드에 필요한 파라미터 조회
+     * 
+     * config 메서드에서 사용하는 설정 파라미터를 조회합니다.
+     * API 요청에 필요한 설정 정보를 제공합니다.
+     * 
+     * @return 설정 파라미터 객체
      */
     Object getConfig();
 }

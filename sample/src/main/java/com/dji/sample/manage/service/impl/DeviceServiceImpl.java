@@ -55,7 +55,51 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- *
+ * 디바이스 관리 서비스 구현체
+ * 
+ * DJI Cloud API의 디바이스 관리를 위한 핵심 서비스 구현체입니다.
+ * 이 클래스는 다음과 같은 주요 기능들을 구현합니다:
+ * 
+ * 1. 디바이스 생명주기 관리
+ *    - 디바이스 온라인/오프라인 상태 관리
+ *    - MQTT 토픽 구독/구독 해제 처리
+ *    - 디바이스 연결 상태 실시간 모니터링
+ *    - Redis를 통한 디바이스 상태 캐싱
+ * 
+ * 2. 디바이스 토폴로지 관리
+ *    - 게이트웨이-서브 디바이스 관계 관리
+ *    - 웹 및 PILOT용 토폴로지 정보 제공
+ *    - 디바이스 바인딩/언바인딩 처리
+ *    - 실시간 토폴로지 변경 알림
+ * 
+ * 3. 디바이스 속성 및 제어 관리
+ *    - 디바이스 속성 설정 및 조회
+ *    - 펌웨어 업그레이드 작업 관리
+ *    - 비행 제어 권한 관리
+ *    - 도킹 스테이션 모드 관리
+ * 
+ * 4. 실시간 데이터 전송
+ *    - OSD 데이터를 웹 및 PILOT으로 실시간 전송
+ *    - WebSocket을 통한 실시간 상태 업데이트
+ *    - 디바이스 상태 변경 알림
+ *    - MQTT를 통한 디바이스 제어 명령 전송
+ * 
+ * 5. 데이터베이스 관리
+ *    - 디바이스 정보 CRUD 작업
+ *    - 펌웨어 상태 관리
+ *    - 디바이스 이력 추적
+ *    - 트랜잭션 관리
+ * 
+ * 주요 의존성:
+ * - MqttGatewayPublish: MQTT 메시지 발행
+ * - IDeviceMapper: 데이터베이스 접근
+ * - IWebSocketMessageService: WebSocket 메시지 전송
+ * - IDeviceRedisService: Redis 캐시 관리
+ * - 다양한 MQTT 구독 서비스들
+ * 
+ * 이 클래스는 DJI 디바이스의 전체 생명주기를
+ * 안전하고 효율적으로 관리하는 핵심 서비스입니다.
+ * 
  * @author sean.zhou
  * @version 0.1
  * @date 2021/11/10
@@ -65,102 +109,211 @@ import java.util.stream.Collectors;
 @Transactional
 public class DeviceServiceImpl implements IDeviceService {
 
+    /**
+     * MQTT 게이트웨이 메시지 발행 서비스
+     * MQTT를 통해 디바이스에게 명령을 전송
+     */
     @Autowired
     private MqttGatewayPublish messageSender;
 
+    /**
+     * 디바이스 데이터베이스 매퍼
+     * 디바이스 정보의 CRUD 작업을 담당
+     */
     @Autowired
     private IDeviceMapper mapper;
 
+    /**
+     * 디바이스 사전 관리 서비스
+     * 디바이스 타입, 모델 정보 등을 관리
+     */
     @Autowired
     private IDeviceDictionaryService dictionaryService;
 
+    /**
+     * MQTT 토픽 서비스
+     * MQTT 토픽 구독/구독 해제를 관리
+     */
     @Autowired
     private IMqttTopicService topicService;
 
+    /**
+     * 워크스페이스 관리 서비스
+     * 조직 및 워크스페이스 정보를 관리
+     */
     @Autowired
     private IWorkspaceService workspaceService;
 
+    /**
+     * 디바이스 페이로드 서비스
+     * 드론의 페이로드(카메라, 센서 등) 정보를 관리
+     */
     @Autowired
     private IDevicePayloadService payloadService;
 
+    /**
+     * WebSocket 메시지 서비스
+     * 실시간으로 클라이언트에게 디바이스 상태 변경을 알림
+     */
     @Autowired
     private IWebSocketMessageService webSocketMessageService;
 
+    /**
+     * JSON 객체 매퍼
+     * JSON 데이터 변환을 담당
+     */
     @Autowired
     private ObjectMapper objectMapper;
 
+    /**
+     * 디바이스 펌웨어 서비스
+     * 디바이스 펌웨어 업그레이드 작업을 관리
+     */
     @Autowired
     private IDeviceFirmwareService deviceFirmwareService;
 
+    /**
+     * 용량 카메라 서비스
+     * 카메라 용량 및 설정을 관리
+     */
     @Autowired
     private ICapacityCameraService capacityCameraService;
 
+    /**
+     * 디바이스 Redis 서비스
+     * 디바이스 상태 정보를 Redis에 캐싱하여 빠른 조회를 지원
+     */
     @Autowired
     private IDeviceRedisService deviceRedisService;
 
+    /**
+     * 상태 구독 서비스
+     * 디바이스 상태 변경을 구독
+     */
     @Autowired
     private StatusSubscribe statusSubscribe;
 
+    /**
+     * 상태 변경 구독 서비스
+     * 디바이스 상태 변경 이벤트를 구독
+     */
     @Autowired
     private StateSubscribe stateSubscribe;
 
+    /**
+     * OSD 구독 서비스
+     * 디바이스 OSD 데이터를 구독
+     */
     @Autowired
     private OsdSubscribe osdSubscribe;
 
+    /**
+     * 서비스 구독 서비스
+     * 디바이스 서비스 호출을 구독
+     */
     @Autowired
     private ServicesSubscribe servicesSubscribe;
 
+    /**
+     * 이벤트 구독 서비스
+     * 디바이스 이벤트를 구독
+     */
     @Autowired
     private EventsSubscribe eventsSubscribe;
 
+    /**
+     * 요청 구독 서비스
+     * 디바이스 요청을 구독
+     */
     @Autowired
     private RequestsSubscribe requestsSubscribe;
 
+    /**
+     * 속성 설정 구독 서비스
+     * 디바이스 속성 설정을 구독
+     */
     @Autowired
     private PropertySetSubscribe propertySetSubscribe;
 
+    /**
+     * 속성 서비스
+     * 디바이스 속성 관리
+     */
     @Autowired
     private AbstractPropertyService abstractPropertyService;
 
+    /**
+     * 펌웨어 서비스
+     * 디바이스 펌웨어 관리
+     */
     @Autowired
     private AbstractFirmwareService abstractFirmwareService;
 
+    /**
+     * 서브 디바이스(드론) 오프라인 처리를 수행합니다.
+     * 
+     * Redis 캐시에서 디바이스 정보를 확인하고, 게이트웨이 토픽 구독을 해제한 후
+     * 디바이스 오프라인 상태를 설정하고 토폴로지 정보를 업데이트합니다.
+     * 
+     * @param deviceSn 디바이스 시리얼 번호
+     */
     @Override
     public void subDeviceOffline(String deviceSn) {
-        // If no information about this device exists in the cache, the drone is considered to be offline.
+        // Redis 캐시에 디바이스 정보가 없으면 이미 오프라인 상태로 간주
         Optional<DeviceDTO> deviceOpt = deviceRedisService.getDeviceOnline(deviceSn);
         if (deviceOpt.isEmpty()) {
             log.debug("The drone is already offline.");
             return;
         }
         try {
+            // 게이트웨이 온라인 토픽 구독 해제
             gatewayOnlineSubscribeTopic(SDKManager.getDeviceSDK(String.valueOf(deviceOpt.get().getParentSn())));
         } catch (CloudSDKException e) {
             log.debug("The gateway is already offline.", e);
         }
+        // 서브 디바이스 오프라인 상태 설정
         deviceRedisService.subDeviceOffline(deviceSn);
-        // Publish the latest device topology information in the current workspace.
+        // 현재 워크스페이스의 최신 디바이스 토폴로지 정보 발행
         pushDeviceOfflineTopo(deviceOpt.get().getWorkspaceId(), deviceSn);
         log.debug("{} offline.", deviceSn);
     }
 
+    /**
+     * 게이트웨이 오프라인 처리를 수행합니다.
+     * 
+     * 게이트웨이와 연결된 모든 서브 디바이스들을 오프라인 처리하고,
+     * MQTT 토픽 구독을 해제합니다.
+     * 
+     * @param gatewaySn 게이트웨이 시리얼 번호
+     */
     @Override
     public void gatewayOffline(String gatewaySn) {
-        // If no information about this device exists in the cache, the drone is considered to be offline.
+        // Redis 캐시에 게이트웨이 정보가 없으면 이미 오프라인 상태로 간주
         Optional<DeviceDTO> deviceOpt = deviceRedisService.getDeviceOnline(gatewaySn);
         if (deviceOpt.isEmpty()) {
             log.debug("The gateway is already offline.");
             return;
         }
 
+        // 서브 디바이스 오프라인 처리
         deviceRedisService.subDeviceOffline(deviceOpt.get().getChildDeviceSn());
+        // 게이트웨이 오프라인 처리
         deviceRedisService.gatewayOffline(gatewaySn);
+        // MQTT 토픽 구독 해제
         offlineUnsubscribeTopic(SDKManager.getDeviceSDK(gatewaySn));
-        // Publish the latest device topology information in the current workspace.
+        // 현재 워크스페이스의 최신 디바이스 토폴로지 정보 발행
         pushDeviceOfflineTopo(deviceOpt.get().getWorkspaceId(), gatewaySn);
         log.debug("{} offline.", gatewaySn);
     }
 
+    /**
+     * 게이트웨이 온라인 시 MQTT 토픽을 구독합니다.
+     * 
+     * 게이트웨이의 상태, 상태 변경, OSD 데이터, 서비스, 이벤트, 요청, 속성 설정 등의
+     * 모든 MQTT 토픽을 구독합니다.
+     * 
+     * @param gateway 게이트웨이 매니저 객체
+     */
     @Override
     public void gatewayOnlineSubscribeTopic(GatewayManager gateway) {
         statusSubscribe.subscribe(gateway);
@@ -172,6 +325,13 @@ public class DeviceServiceImpl implements IDeviceService {
         propertySetSubscribe.subscribe(gateway);
     }
 
+    /**
+     * 서브 디바이스 온라인 시 MQTT 토픽을 구독합니다.
+     * 
+     * 서브 디바이스의 상태 정보를 구독하되, 상태 변경과 OSD 데이터는 구독하지 않습니다.
+     * 
+     * @param gateway 게이트웨이 매니저 객체
+     */
     @Override
     public void subDeviceOnlineSubscribeTopic(GatewayManager gateway) {
         statusSubscribe.subscribe(gateway);
@@ -183,6 +343,11 @@ public class DeviceServiceImpl implements IDeviceService {
         propertySetSubscribe.subscribe(gateway);
     }
 
+    /**
+     * 디바이스 오프라인 시 모든 MQTT 토픽 구독을 해제합니다.
+     * 
+     * @param gateway 게이트웨이 매니저 객체
+     */
     @Override
     public void offlineUnsubscribeTopic(GatewayManager gateway) {
         statusSubscribe.unsubscribe(gateway);
@@ -194,6 +359,14 @@ public class DeviceServiceImpl implements IDeviceService {
         propertySetSubscribe.unsubscribe(gateway);
     }
 
+    /**
+     * 조건에 따라 디바이스 목록을 조회합니다.
+     * 
+     * 다양한 검색 조건을 사용하여 디바이스를 필터링하고 조회합니다.
+     * 
+     * @param param 디바이스 조회 파라미터
+     * @return 조건에 맞는 디바이스 목록
+     */
     @Override
     public List<DeviceDTO> getDevicesByParams(DeviceQueryParam param) {
         return mapper.selectList(
@@ -221,6 +394,15 @@ public class DeviceServiceImpl implements IDeviceService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 웹용 디바이스 토폴로지를 조회합니다.
+     * 
+     * 워크스페이스 내의 모든 게이트웨이 디바이스를 조회하고,
+     * 온라인 상태인 디바이스들의 토폴로지 정보를 구성합니다.
+     * 
+     * @param workspaceId 워크스페이스 ID
+     * @return 웹용 디바이스 토폴로지 목록
+     */
     @Override
     public List<DeviceDTO> getDevicesTopoForWeb(String workspaceId) {
         List<DeviceDTO> devicesList = this.getDevicesByParams(
@@ -237,12 +419,20 @@ public class DeviceServiceImpl implements IDeviceService {
         return devicesList;
     }
 
+    /**
+     * 디바이스 토폴로지 정보를 구성합니다.
+     * 
+     * 게이트웨이 디바이스의 상태를 확인하고, 연결된 서브 디바이스와 페이로드 정보를
+     * 포함한 완전한 토폴로지 구조를 만듭니다.
+     * 
+     * @param gateway 게이트웨이 디바이스 DTO
+     */
     @Override
     public void spliceDeviceTopo(DeviceDTO gateway) {
 
         gateway.setStatus(deviceRedisService.checkDeviceOnline(gateway.getDeviceSn()));
 
-        // sub device
+        // 서브 디바이스 정보 조회
         if (!StringUtils.hasText(gateway.getChildDeviceSn())) {
             return;
         }
@@ -251,10 +441,16 @@ public class DeviceServiceImpl implements IDeviceService {
         subDevice.setStatus(deviceRedisService.checkDeviceOnline(subDevice.getDeviceSn()));
         gateway.setChildren(subDevice);
 
-        // payloads
+        // 페이로드 정보 조회
         subDevice.setPayloadsList(payloadService.getDevicePayloadEntitiesByDeviceSn(gateway.getChildDeviceSn()));
     }
 
+    /**
+     * PILOT용 디바이스 토폴로지를 조회합니다.
+     * 
+     * @param sn 디바이스 시리얼 번호
+     * @return PILOT용 토폴로지 디바이스 정보 (Optional)
+     */
     @Override
     public Optional<TopologyDeviceDTO> getDeviceTopoForPilot(String sn) {
         if (!StringUtils.hasText(sn)) {
@@ -273,6 +469,12 @@ public class DeviceServiceImpl implements IDeviceService {
         return Optional.of(topologyDeviceList.get(0));
     }
 
+    /**
+     * 디바이스 DTO를 토폴로지 DTO로 변환합니다.
+     * 
+     * @param device 디바이스 DTO
+     * @return 토폴로지 디바이스 DTO
+     */
     @Override
     public TopologyDeviceDTO deviceConvertToTopologyDTO(DeviceDTO device) {
         if (device == null) {
@@ -296,6 +498,12 @@ public class DeviceServiceImpl implements IDeviceService {
                     .setGatewaySn(device.getParentSn());
     }
 
+    /**
+     * 디바이스 오프라인 토폴로지 정보를 WebSocket으로 전송합니다.
+     * 
+     * @param workspaceId 워크스페이스 ID
+     * @param deviceSn 디바이스 시리얼 번호
+     */
     @Override
     public void pushDeviceOfflineTopo(String workspaceId, String deviceSn) {
         webSocketMessageService.sendBatch(
@@ -303,6 +511,13 @@ public class DeviceServiceImpl implements IDeviceService {
                 new TopologyDeviceDTO().setSn(deviceSn).setOnlineStatus(false));
     }
 
+    /**
+     * 디바이스 온라인 토폴로지 정보를 WebSocket으로 전송합니다.
+     * 
+     * @param workspaceId 워크스페이스 ID
+     * @param gatewaySn 게이트웨이 시리얼 번호
+     * @param deviceSn 디바이스 시리얼 번호
+     */
     @Override
     public void pushDeviceOnlineTopo(String workspaceId, String gatewaySn, String deviceSn) {
         webSocketMessageService.sendBatch(
@@ -310,6 +525,13 @@ public class DeviceServiceImpl implements IDeviceService {
                 getDeviceTopoForPilot(deviceSn).orElseGet(TopologyDeviceDTO::new).setGatewaySn(gatewaySn));
     }
 
+    /**
+     * OSD 데이터를 PILOT으로 전송합니다.
+     * 
+     * @param workspaceId 워크스페이스 ID
+     * @param sn 디바이스 시리얼 번호
+     * @param data OSD 데이터
+     */
     @Override
     public void pushOsdDataToPilot(String workspaceId, String sn, DeviceOsdHost data) {
         webSocketMessageService.sendBatch(
@@ -319,6 +541,14 @@ public class DeviceServiceImpl implements IDeviceService {
                         .setHost(data));
     }
 
+    /**
+     * OSD 데이터를 웹으로 전송합니다.
+     * 
+     * @param workspaceId 워크스페이스 ID
+     * @param codeEnum 비즈니스 코드 열거형
+     * @param sn 디바이스 시리얼 번호
+     * @param data 전송할 데이터
+     */
     @Override
     public void pushOsdDataToWeb(String workspaceId, BizCodeEnum codeEnum, String sn, Object data) {
         webSocketMessageService.sendBatch(
@@ -326,9 +556,12 @@ public class DeviceServiceImpl implements IDeviceService {
     }
 
     /**
-     * Save the device information and update the information directly if the device already exists.
-     * @param device
-     * @return
+     * 디바이스 정보를 저장하거나 업데이트합니다.
+     * 
+     * 디바이스가 이미 존재하면 업데이트하고, 존재하지 않으면 새로 저장합니다.
+     * 
+     * @param device 저장/업데이트할 디바이스 정보
+     * @return 저장/업데이트 성공 여부
      */
     public Boolean saveOrUpdateDevice(DeviceDTO device) {
         int count = mapper.selectCount(
@@ -338,9 +571,10 @@ public class DeviceServiceImpl implements IDeviceService {
     }
 
     /**
-     * Save the device information.
-     * @param device
-     * @return
+     * 디바이스 정보를 저장합니다.
+     * 
+     * @param device 저장할 디바이스 정보
+     * @return 저장된 디바이스의 ID
      */
     public Integer saveDevice(DeviceDTO device) {
         DeviceEntity entity = deviceDTO2Entity(device);
@@ -348,9 +582,10 @@ public class DeviceServiceImpl implements IDeviceService {
     }
 
     /**
-     * Convert database entity object into device data transfer object.
-     * @param entity
-     * @return
+     * 데이터베이스 엔티티 객체를 디바이스 DTO로 변환합니다.
+     * 
+     * @param entity 디바이스 엔티티
+     * @return 디바이스 DTO
      */
     private DeviceDTO deviceEntityConvertToDTO(DeviceEntity entity) {
         if (entity == null) {
@@ -393,11 +628,19 @@ public class DeviceServiceImpl implements IDeviceService {
         return deviceDTO;
     }
 
+    /**
+     * 디바이스에 펌웨어 상태 정보를 추가합니다.
+     * 
+     * 현재 펌웨어 버전과 최신 펌웨어 버전을 비교하여 업그레이드 상태를 결정합니다.
+     * 
+     * @param deviceDTO 디바이스 DTO
+     * @param entity 디바이스 엔티티
+     */
     private void addFirmwareStatus(DeviceDTO deviceDTO, DeviceEntity entity) {
         if (!StringUtils.hasText(entity.getFirmwareVersion())) {
             return;
         }
-        // Query whether the device is updating firmware.
+        // 디바이스가 펌웨어 업그레이드 중인지 확인
         Optional<EventsReceiver<OtaProgress>> progressOpt = deviceRedisService.getFirmwareUpgradingProgress(entity.getDeviceSn());
         if (progressOpt.isPresent()) {
             deviceDTO.setFirmwareStatus(DeviceFirmwareStatusEnum.UPGRADING);
@@ -408,8 +651,8 @@ public class DeviceServiceImpl implements IDeviceService {
             return;
         }
 
-        // First query the latest firmware version of the device model and compare it with the current firmware version
-        // to see if it needs to be upgraded.
+        // 디바이스 모델의 최신 펌웨어 버전을 조회하고 현재 펌웨어 버전과 비교하여
+        // 업그레이드가 필요한지 확인
         Optional<DeviceFirmwareNoteDTO> firmwareReleaseNoteOpt = deviceFirmwareService.getLatestFirmwareReleaseNote(entity.getDeviceName());
         if (firmwareReleaseNoteOpt.isEmpty()) {
             deviceDTO.setFirmwareStatus(DeviceFirmwareStatusEnum.NOT_UPGRADE);
@@ -424,6 +667,12 @@ public class DeviceServiceImpl implements IDeviceService {
         deviceDTO.setFirmwareStatus(DeviceFirmwareStatusEnum.NORMAL_UPGRADE);
     }
 
+    /**
+     * 디바이스 정보를 업데이트합니다.
+     * 
+     * @param deviceDTO 업데이트할 디바이스 정보
+     * @return 업데이트 성공 여부
+     */
     @Override
     public Boolean updateDevice(DeviceDTO deviceDTO) {
         int update = mapper.update(this.deviceDTO2Entity(deviceDTO),
@@ -431,6 +680,15 @@ public class DeviceServiceImpl implements IDeviceService {
         return update > 0;
     }
 
+    /**
+     * 디바이스를 바인딩합니다.
+     * 
+     * 디바이스를 워크스페이스에 바인딩하고 Redis 캐시를 업데이트하며,
+     * 토폴로지 정보를 WebSocket으로 전송합니다.
+     * 
+     * @param device 바인딩할 디바이스 정보
+     * @return 바인딩 성공 여부
+     */
     @Override
     public Boolean bindDevice(DeviceDTO device) {
         device.setBoundStatus(true);
@@ -464,6 +722,15 @@ public class DeviceServiceImpl implements IDeviceService {
         return true;
     }
 
+    /**
+     * 도메인별로 바인딩된 디바이스 목록을 페이지네이션으로 조회합니다.
+     * 
+     * @param workspaceId 워크스페이스 ID
+     * @param page 페이지 번호
+     * @param pageSize 페이지 크기
+     * @param domain 디바이스 도메인
+     * @return 페이지네이션된 바인딩된 디바이스 목록
+     */
     @Override
     public PaginationData<DeviceDTO> getBoundDevicesWithDomain(String workspaceId, Long page,
                                                                Long pageSize, Integer domain) {
@@ -489,6 +756,11 @@ public class DeviceServiceImpl implements IDeviceService {
         return new PaginationData<DeviceDTO>(devicesList, new Pagination(pagination.getCurrent(), pagination.getSize(), pagination.getTotal()));
     }
 
+    /**
+     * 디바이스 바인딩을 해제합니다.
+     * 
+     * @param deviceSn 디바이스 시리얼 번호
+     */
     @Override
     public void unbindDevice(String deviceSn) {
 
@@ -510,6 +782,12 @@ public class DeviceServiceImpl implements IDeviceService {
         this.updateDevice(device);
     }
 
+    /**
+     * 시리얼 번호로 디바이스를 조회합니다.
+     * 
+     * @param sn 디바이스 시리얼 번호
+     * @return 디바이스 정보 (Optional)
+     */
     @Override
     public Optional<DeviceDTO> getDeviceBySn(String sn) {
         List<DeviceDTO> devicesList = this.getDevicesByParams(DeviceQueryParam.builder().deviceSn(sn).build());
@@ -521,6 +799,15 @@ public class DeviceServiceImpl implements IDeviceService {
         return Optional.of(device);
     }
 
+    /**
+     * 디바이스 OTA 작업을 생성합니다.
+     * 
+     * 펌웨어 업그레이드를 위한 OTA 작업을 생성하고 디바이스 상태를 업데이트합니다.
+     * 
+     * @param workspaceId 워크스페이스 ID
+     * @param upgradeDTOS 업그레이드할 디바이스 목록
+     * @return OTA 작업 생성 결과
+     */
     @Override
     public HttpResultResponse createDeviceOtaJob(String workspaceId, List<DeviceFirmwareUpgradeDTO> upgradeDTOS) {
         List<OtaCreateDevice> deviceOtaFirmwares = deviceFirmwareService.getDeviceOtaFirmware(workspaceId, upgradeDTOS);
@@ -545,15 +832,18 @@ public class DeviceServiceImpl implements IDeviceService {
             return HttpResultResponse.error(serviceReply.getResult());
         }
 
-        // Record the device state that needs to be updated.
+        // 업데이트가 필요한 디바이스 상태를 기록
         deviceOtaFirmwares.forEach(deviceOta -> deviceRedisService.setFirmwareUpgrading(deviceOta.getSn(),
                 EventsReceiver.<OtaProgress>builder().bid(bid).sn(deviceOta.getSn()).build()));
         return HttpResultResponse.success();
     }
 
     /**
-     * Determine whether the firmware can be upgraded.
-     * @param dockSn
+     * 펌웨어 업그레이드 가능 여부를 확인합니다.
+     * 
+     * 도킹 스테이션의 비상 정지 상태와 모드를 확인하여 업그레이드 가능 여부를 판단합니다.
+     * 
+     * @param dockSn 도킹 스테이션 시리얼 번호
      */
     private void checkOtaConditions(String dockSn) {
         Optional<OsdDock> deviceOpt = deviceRedisService.getDeviceOsd(dockSn, OsdDock.class);
@@ -571,6 +861,14 @@ public class DeviceServiceImpl implements IDeviceService {
         }
     }
 
+    /**
+     * 디바이스 속성을 설정합니다.
+     * 
+     * @param workspaceId 워크스페이스 ID
+     * @param dockSn 도킹 스테이션 시리얼 번호
+     * @param param 설정할 속성 파라미터
+     * @return 속성 설정 결과
+     */
     @Override
     public int devicePropertySet(String workspaceId, String dockSn, JsonNode param) {
         String property = param.fieldNames().next();
@@ -586,7 +884,7 @@ public class DeviceServiceImpl implements IDeviceService {
             throw new RuntimeException("Device is offline.");
         }
 
-        // Make sure the data is valid.
+        // 데이터 유효성 확인
         BasicDeviceProperty basicDeviceProperty = objectMapper.convertValue(param.get(property), propertyEnum.getClazz());
         boolean valid = basicDeviceProperty.valid();
         if (!valid) {
@@ -602,18 +900,36 @@ public class DeviceServiceImpl implements IDeviceService {
         return result.getResult();
     }
 
+    /**
+     * 도킹 스테이션의 모드를 조회합니다.
+     * 
+     * @param dockSn 도킹 스테이션 시리얼 번호
+     * @return 도킹 스테이션 모드
+     */
     @Override
     public DockModeCodeEnum getDockMode(String dockSn) {
         return deviceRedisService.getDeviceOsd(dockSn, OsdDock.class)
                 .map(OsdDock::getModeCode).orElse(null);
     }
 
+    /**
+     * 디바이스의 모드를 조회합니다.
+     * 
+     * @param deviceSn 디바이스 시리얼 번호
+     * @return 디바이스 모드
+     */
     @Override
     public DroneModeCodeEnum getDeviceMode(String deviceSn) {
         return deviceRedisService.getDeviceOsd(deviceSn, OsdDockDrone.class)
                 .map(OsdDockDrone::getModeCode).orElse(DroneModeCodeEnum.DISCONNECTED);
     }
 
+    /**
+     * 도킹 스테이션의 DRC 모드 상태를 확인합니다.
+     * 
+     * @param dockSn 도킹 스테이션 시리얼 번호
+     * @return DRC 모드 활성화 여부
+     */
     @Override
     public Boolean checkDockDrcMode(String dockSn) {
         return deviceRedisService.getDeviceOsd(dockSn, OsdDock.class)
@@ -621,6 +937,12 @@ public class DeviceServiceImpl implements IDeviceService {
                 .orElse(DrcStateEnum.DISCONNECTED) != DrcStateEnum.DISCONNECTED;
     }
 
+    /**
+     * 비행 제어 권한을 확인합니다.
+     * 
+     * @param gatewaySn 게이트웨이 시리얼 번호
+     * @return 비행 제어 권한 여부
+     */
     @Override
     public Boolean checkAuthorityFlight(String gatewaySn) {
         return deviceRedisService.getDeviceOnline(gatewaySn).flatMap(gateway ->
@@ -630,6 +952,12 @@ public class DeviceServiceImpl implements IDeviceService {
                 .orElse(true);
     }
 
+    /**
+     * 비행 제어 권한을 업데이트합니다.
+     * 
+     * @param gateway 게이트웨이 디바이스
+     * @param controlSource 제어 소스
+     */
     @Override
     public void updateFlightControl(DeviceDTO gateway, ControlSourceEnum controlSource) {
         if (controlSource == gateway.getControlSource()) {
@@ -648,9 +976,10 @@ public class DeviceServiceImpl implements IDeviceService {
     }
 
     /**
-     * Convert device data transfer object into database entity object.
-     * @param dto
-     * @return
+     * 디바이스 DTO를 데이터베이스 엔티티 객체로 변환합니다.
+     * 
+     * @param dto 디바이스 DTO
+     * @return 디바이스 엔티티
      */
     private DeviceEntity deviceDTO2Entity(DeviceDTO dto) {
         DeviceEntity.DeviceEntityBuilder builder = DeviceEntity.builder();

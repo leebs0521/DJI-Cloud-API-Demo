@@ -15,14 +15,10 @@ import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorato
  */
 public class ConcurrentWebSocketSession extends ConcurrentWebSocketSessionDecorator {
 
-    /**
-     * 전송 버퍼 크기 제한 (1MB)
-     */
+    /** 전송 버퍼 크기 제한 (1MB) */
     private static final int SEND_BUFFER_SIZE_LIMIT = 1024 * 1024;
 
-    /**
-     * 전송 시간 제한 (1초)
-     */
+    /** 전송 시간 제한 (1초) */
     private static final int SEND_TIME_LIMIT = 1000;
 
     /**

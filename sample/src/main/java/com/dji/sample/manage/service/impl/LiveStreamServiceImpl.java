@@ -21,6 +21,51 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
+ * 라이브스트림 관리 서비스 구현체
+ * 
+ * DJI Cloud API의 라이브스트림 관리를 위한 서비스 구현체입니다.
+ * 이 클래스는 다음과 같은 주요 기능들을 구현합니다:
+ * 
+ * 1. 라이브스트림 시작/중지 관리
+ *    - 라이브스트림 시작 및 중지 처리
+ *    - 다양한 스트리밍 프로토콜 지원 (RTMP, RTSP, GB28181, WHIP 등)
+ *    - 스트리밍 URL 생성 및 관리
+ *    - 스트리밍 상태 모니터링
+ * 
+ * 2. 라이브스트림 품질 관리
+ *    - 비디오 품질 설정 및 변경
+ *    - 실시간 품질 조정
+ *    - 품질별 스트리밍 최적화
+ *    - 대역폭 관리
+ * 
+ * 3. 카메라 렌즈 관리
+ *    - 카메라 렌즈 전환 처리
+ *    - 다중 카메라 지원
+ *    - 렌즈별 설정 관리
+ *    - 렌즈 상태 모니터링
+ * 
+ * 4. 디바이스 연결 관리
+ *    - 디바이스 온라인 상태 확인
+ *    - 게이트웨이-드론 연결 검증
+ *    - 디바이스 권한 확인
+ *    - 연결 상태 모니터링
+ * 
+ * 5. 스트리밍 URL 관리
+ *    - 프로토콜별 URL 생성
+ *    - URL 유효성 검증
+ *    - URL 보안 관리
+ *    - URL 만료 처리
+ * 
+ * 주요 의존성:
+ * - ICapacityCameraService: 카메라 용량 관리
+ * - IDeviceService: 디바이스 관리
+ * - IWorkspaceService: 워크스페이스 관리
+ * - IDeviceRedisService: Redis 캐시 관리
+ * - AbstractLivestreamService: DJI 라이브스트림 서비스
+ * 
+ * 이 클래스는 DJI 디바이스의 라이브스트림을
+ * 안전하고 효율적으로 관리하는 서비스입니다.
+ * 
  * @author sean.zhou
  * @date 2021/11/22
  * @version 0.1
@@ -44,17 +89,25 @@ public class LiveStreamServiceImpl implements ILiveStreamService {
     @Autowired
     private AbstractLivestreamService abstractLivestreamService;
 
+    /**
+     * 워크스페이스의 라이브스트림 용량을 조회합니다.
+     * 
+     * 워크스페이스 내의 모든 드론과 도킹 스테이션의 라이브스트림 용량을 조회합니다.
+     * 
+     * @param workspaceId 워크스페이스 ID
+     * @return 라이브스트림 용량 디바이스 목록
+     */
     @Override
     public List<CapacityDeviceDTO> getLiveCapacity(String workspaceId) {
 
-        // Query all devices in this workspace.
+        // 워크스페이스 내의 모든 디바이스 조회
         List<DeviceDTO> devicesList = deviceService.getDevicesByParams(
                 DeviceQueryParam.builder()
                         .workspaceId(workspaceId)
                         .domains(List.of(DeviceDomainEnum.DRONE.getDomain(), DeviceDomainEnum.DOCK.getDomain()))
                         .build());
 
-        // Query the live capability of each drone.
+        // 각 드론의 라이브스트림 용량 조회
         return devicesList.stream()
                 .filter(device -> deviceRedisService.checkDeviceOnline(device.getDeviceSn()))
                 .map(device -> CapacityDeviceDTO.builder()
@@ -65,9 +118,17 @@ public class LiveStreamServiceImpl implements ILiveStreamService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 라이브스트림을 시작합니다.
+     * 
+     * 지정된 비디오 ID로 라이브스트림을 시작하고 스트리밍 URL을 반환합니다.
+     * 
+     * @param liveParam 라이브스트림 파라미터
+     * @return 라이브스트림 시작 결과
+     */
     @Override
     public HttpResultResponse liveStart(LiveTypeDTO liveParam) {
-        // Check if this lens is available live.
+        // 라이브스트림 시작 전 검증
         HttpResultResponse<DeviceDTO> responseResult = this.checkBeforeLive(liveParam.getVideoId());
         if (HttpResultResponse.CODE_SUCCESS != responseResult.getCode()) {
             return responseResult;
@@ -76,6 +137,7 @@ public class LiveStreamServiceImpl implements ILiveStreamService {
         ILivestreamUrl url = LiveStreamProperty.get(liveParam.getUrlType());
         url = setExt(liveParam.getUrlType(), url, liveParam.getVideoId());
 
+        // 라이브스트림 시작 요청
         TopicServicesResponse<ServicesReplyData<String>> response = abstractLivestreamService.liveStartPush(
                 SDKManager.getDeviceSDK(responseResult.getData().getDeviceSn()),
                 new LiveStartPushRequest()
@@ -90,6 +152,7 @@ public class LiveStreamServiceImpl implements ILiveStreamService {
 
         LiveDTO live = new LiveDTO();
 
+        // 프로토콜별 URL 변환
         switch (liveParam.getUrlType()) {
             case AGORA:
                 break;
@@ -120,13 +183,21 @@ public class LiveStreamServiceImpl implements ILiveStreamService {
         return HttpResultResponse.success(live);
     }
 
+    /**
+     * 라이브스트림을 중지합니다.
+     * 
+     * @param videoId 비디오 ID
+     * @return 라이브스트림 중지 결과
+     */
     @Override
     public HttpResultResponse liveStop(VideoId videoId) {
+        // 라이브스트림 중지 전 검증
         HttpResultResponse<DeviceDTO> responseResult = this.checkBeforeLive(videoId);
         if (HttpResultResponse.CODE_SUCCESS != responseResult.getCode()) {
             return responseResult;
         }
 
+        // 라이브스트림 중지 요청
         TopicServicesResponse<ServicesReplyData> response = abstractLivestreamService.liveStopPush(
                 SDKManager.getDeviceSDK(responseResult.getData().getDeviceSn()), new LiveStopPushRequest()
                         .setVideoId(videoId));
@@ -137,13 +208,21 @@ public class LiveStreamServiceImpl implements ILiveStreamService {
         return HttpResultResponse.success();
     }
 
+    /**
+     * 라이브스트림 품질을 설정합니다.
+     * 
+     * @param liveParam 라이브스트림 파라미터
+     * @return 품질 설정 결과
+     */
     @Override
     public HttpResultResponse liveSetQuality(LiveTypeDTO liveParam) {
+        // 품질 설정 전 검증
         HttpResultResponse<DeviceDTO> responseResult = this.checkBeforeLive(liveParam.getVideoId());
         if (responseResult.getCode() != 0) {
             return responseResult;
         }
 
+        // 라이브스트림 품질 설정 요청
         TopicServicesResponse<ServicesReplyData> response = abstractLivestreamService.liveSetQuality(
                 SDKManager.getDeviceSDK(responseResult.getData().getDeviceSn()), new LiveSetQualityRequest()
                         .setVideoQuality(liveParam.getVideoQuality())
@@ -155,13 +234,21 @@ public class LiveStreamServiceImpl implements ILiveStreamService {
         return HttpResultResponse.success();
     }
 
+    /**
+     * 라이브스트림 렌즈를 변경합니다.
+     * 
+     * @param liveParam 라이브스트림 파라미터
+     * @return 렌즈 변경 결과
+     */
     @Override
     public HttpResultResponse liveLensChange(LiveTypeDTO liveParam) {
+        // 렌즈 변경 전 검증
         HttpResultResponse<DeviceDTO> responseResult = this.checkBeforeLive(liveParam.getVideoId());
         if (HttpResultResponse.CODE_SUCCESS != responseResult.getCode()) {
             return responseResult;
         }
 
+        // 라이브스트림 렌즈 변경 요청
         TopicServicesResponse<ServicesReplyData> response = abstractLivestreamService.liveLensChange(
                 SDKManager.getDeviceSDK(responseResult.getData().getDeviceSn()), new LiveLensChangeRequest()
                         .setVideoType(liveParam.getVideoType())
@@ -175,9 +262,12 @@ public class LiveStreamServiceImpl implements ILiveStreamService {
     }
 
     /**
-     * Check if this lens is available live.
-     * @param videoId
-     * @return
+     * 라이브스트림 시작 전 검증을 수행합니다.
+     * 
+     * 디바이스 온라인 상태와 연결 상태를 확인합니다.
+     * 
+     * @param videoId 비디오 ID
+     * @return 검증 결과
      */
     private HttpResultResponse<DeviceDTO> checkBeforeLive(VideoId videoId) {
         if (Objects.isNull(videoId)) {
@@ -185,7 +275,7 @@ public class LiveStreamServiceImpl implements ILiveStreamService {
         }
 
         Optional<DeviceDTO> deviceOpt = deviceService.getDeviceBySn(videoId.getDroneSn());
-        // Check if the gateway device connected to this drone exists
+        // 이 드론에 연결된 게이트웨이 디바이스가 존재하는지 확인
         if (deviceOpt.isEmpty()) {
             return HttpResultResponse.error(LiveErrorCodeEnum.NO_AIRCRAFT);
         }
@@ -205,10 +295,14 @@ public class LiveStreamServiceImpl implements ILiveStreamService {
     }
 
     /**
-     * This is business-customized logic and is only used for testing.
-     * @param type
-     * @param url
-     * @param videoId
+     * 비즈니스 커스터마이징 로직으로 테스트용으로만 사용됩니다.
+     * 
+     * 프로토콜 타입에 따라 URL을 설정합니다.
+     * 
+     * @param type URL 타입
+     * @param url 라이브스트림 URL
+     * @param videoId 비디오 ID
+     * @return 설정된 URL
      */
     private ILivestreamUrl setExt(UrlTypeEnum type, ILivestreamUrl url, VideoId videoId) {
         switch (type) {

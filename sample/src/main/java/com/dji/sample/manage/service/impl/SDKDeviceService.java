@@ -34,6 +34,53 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
+ * SDK 디바이스 서비스 구현체
+ * 
+ * DJI Cloud API의 디바이스 관리를 위한 SDK 서비스 구현체입니다.
+ * 이 클래스는 AbstractDeviceService를 상속받아 DJI 디바이스의
+ * 온라인/오프라인 상태, OSD 데이터, 펌웨어 업데이트 등을 처리합니다.
+ * 
+ * 주요 기능:
+ * 1. 디바이스 온라인/오프라인 관리
+ *    - 토폴로지 업데이트 처리
+ *    - 게이트웨이-서브 디바이스 연결 관리
+ *    - 디바이스 상태 변경 알림
+ *    - 온라인 재연결 처리
+ * 
+ * 2. OSD 데이터 처리
+ *    - 도킹 스테이션 OSD 데이터 처리
+ *    - 드론 OSD 데이터 처리
+ *    - 리모트 컨트롤 OSD 데이터 처리
+ *    - RC 드론 OSD 데이터 처리
+ * 
+ * 3. 펌웨어 버전 관리
+ *    - 도킹 스테이션 펌웨어 버전 업데이트
+ *    - RC 및 드론 펌웨어 버전 업데이트
+ *    - RC 페이로드 펌웨어 버전 업데이트
+ *    - 펌웨어 상태 추적
+ * 
+ * 4. 제어 소스 관리
+ *    - 도킹 스테이션 제어 소스 업데이트
+ *    - RC 제어 소스 업데이트
+ *    - 제어 권한 변경 알림
+ *    - 제어 소스 상태 모니터링
+ * 
+ * 5. 디바이스 데이터 변환
+ *    - 게이트웨이 데이터 변환
+ *    - 서브 디바이스 데이터 변환
+ *    - 디바이스 저장 및 업데이트
+ *    - 디바이스 메타데이터 관리
+ * 
+ * 주요 의존성:
+ * - IDeviceRedisService: Redis 캐시 관리
+ * - IDeviceService: 디바이스 관리 서비스
+ * - IDeviceDictionaryService: 디바이스 사전 관리
+ * - IWebSocketMessageService: WebSocket 메시지 전송
+ * - IDevicePayloadService: 페이로드 관리 서비스
+ * 
+ * 이 클래스는 DJI 디바이스의 실시간 상태를
+ * 안전하고 효율적으로 관리하는 SDK 서비스입니다.
+ * 
  * @author sean
  * @version 1.7
  * @date 2023/7/4
@@ -42,21 +89,51 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SDKDeviceService extends AbstractDeviceService {
 
+    /**
+     * 디바이스 Redis 서비스
+     * 디바이스 상태 정보를 Redis에 캐싱하여 빠른 조회를 지원
+     */
     @Autowired
     private IDeviceRedisService deviceRedisService;
 
+    /**
+     * 디바이스 관리 서비스
+     * 디바이스 정보의 CRUD 작업을 담당
+     */
     @Autowired
     private IDeviceService deviceService;
 
+    /**
+     * 디바이스 사전 관리 서비스
+     * 디바이스 타입, 모델 정보 등을 관리
+     */
     @Autowired
     private IDeviceDictionaryService dictionaryService;
 
+    /**
+     * WebSocket 메시지 서비스
+     * 실시간으로 클라이언트에게 디바이스 상태 변경을 알림
+     */
     @Autowired
     private IWebSocketMessageService webSocketMessageService;
 
+    /**
+     * 디바이스 페이로드 서비스
+     * 드론의 페이로드(카메라, 센서 등) 정보를 관리
+     */
     @Autowired
     private IDevicePayloadService devicePayloadService;
 
+    /**
+     * 토폴로지 온라인 업데이트를 처리합니다.
+     * 
+     * 디바이스가 온라인 상태가 될 때 호출되며, 게이트웨이와 서브 디바이스의
+     * 연결을 설정하고 관련 데이터를 저장합니다.
+     * 
+     * @param request 토폴로지 업데이트 요청
+     * @param headers 메시지 헤더
+     * @return 상태 응답
+     */
     @Override
     public TopicStatusResponse<MqttReply> updateTopoOnline(TopicStatusRequest<UpdateTopo> request, MessageHeaders headers) {
         UpdateTopoSubDevice updateTopoSubDevice = request.getData().getSubDevices().get(0);
@@ -96,7 +173,7 @@ public class SDKDeviceService extends AbstractDeviceService {
             return new TopicStatusResponse<MqttReply>().setData(MqttReply.success());
         }
 
-        // Subscribe to topic related to drone devices.
+        // 드론 디바이스와 관련된 토픽 구독
         deviceService.subDeviceOnlineSubscribeTopic(gatewayManager);
         deviceService.pushDeviceOnlineTopo(gateway.getWorkspaceId(), gateway.getDeviceSn(), subDevice.getDeviceSn());
 
@@ -104,6 +181,16 @@ public class SDKDeviceService extends AbstractDeviceService {
         return new TopicStatusResponse<MqttReply>().setData(MqttReply.success());
     }
 
+    /**
+     * 토폴로지 오프라인 업데이트를 처리합니다.
+     * 
+     * 디바이스가 오프라인 상태가 될 때 호출되며, 게이트웨이와 서브 디바이스의
+     * 연결을 해제하고 관련 데이터를 업데이트합니다.
+     * 
+     * @param request 토폴로지 업데이트 요청
+     * @param headers 메시지 헤더
+     * @return 상태 응답
+     */
     @Override
     public TopicStatusResponse<MqttReply> updateTopoOffline(TopicStatusRequest<UpdateTopo> request, MessageHeaders headers) {
         GatewayManager gatewayManager = SDKManager.registerDevice(request.getFrom(), null,
@@ -132,6 +219,15 @@ public class SDKDeviceService extends AbstractDeviceService {
         return new TopicStatusResponse<MqttReply>().setData(MqttReply.success());
     }
 
+    /**
+     * 도킹 스테이션 OSD 데이터를 처리합니다.
+     * 
+     * 도킹 스테이션의 실시간 상태 정보(온보드 시스템 데이터)를
+     * 처리하고 WebSocket을 통해 클라이언트에게 전송합니다.
+     * 
+     * @param request 도킹 스테이션 OSD 데이터 요청
+     * @param headers 메시지 헤더 정보
+     */
     @Override
     public void osdDock(TopicOsdRequest<OsdDock> request, MessageHeaders headers) {
         String from = request.getFrom();
@@ -158,6 +254,15 @@ public class SDKDeviceService extends AbstractDeviceService {
         deviceService.pushOsdDataToWeb(device.getWorkspaceId(), BizCodeEnum.DOCK_OSD, from, request.getData());
     }
 
+    /**
+     * 도킹 스테이션 드론 OSD 데이터를 처리합니다.
+     * 
+     * 도킹 스테이션에 연결된 드론의 실시간 상태 정보를
+     * 처리하고 WebSocket을 통해 클라이언트에게 전송합니다.
+     * 
+     * @param request 도킹 스테이션 드론 OSD 데이터 요청
+     * @param headers 메시지 헤더 정보
+     */
     @Override
     public void osdDockDrone(TopicOsdRequest<OsdDockDrone> request, MessageHeaders headers) {
         String from = request.getFrom();
@@ -181,6 +286,15 @@ public class SDKDeviceService extends AbstractDeviceService {
         deviceService.pushOsdDataToWeb(device.getWorkspaceId(), BizCodeEnum.DEVICE_OSD, from, request.getData());
     }
 
+    /**
+     * 리모트 컨트롤 OSD 데이터를 처리합니다.
+     * 
+     * 리모트 컨트롤의 실시간 상태 정보를 처리하고
+     * WebSocket을 통해 클라이언트에게 전송합니다.
+     * 
+     * @param request 리모트 컨트롤 OSD 데이터 요청
+     * @param headers 메시지 헤더 정보
+     */
     @Override
     public void osdRemoteControl(TopicOsdRequest<OsdRemoteControl> request, MessageHeaders headers) {
         String from = request.getFrom();
@@ -208,6 +322,15 @@ public class SDKDeviceService extends AbstractDeviceService {
 
     }
 
+    /**
+     * RC 드론 OSD 데이터를 처리합니다.
+     * 
+     * 리모트 컨트롤에 연결된 드론의 실시간 상태 정보를
+     * 처리하고 WebSocket을 통해 클라이언트에게 전송합니다.
+     * 
+     * @param request RC 드론 OSD 데이터 요청
+     * @param headers 메시지 헤더 정보
+     */
     @Override
     public void osdRcDrone(TopicOsdRequest<OsdRcDrone> request, MessageHeaders headers) {
         String from = request.getFrom();
@@ -240,6 +363,15 @@ public class SDKDeviceService extends AbstractDeviceService {
         deviceService.pushOsdDataToWeb(device.getWorkspaceId(), BizCodeEnum.DEVICE_OSD, from, data);
     }
 
+    /**
+     * 도킹 스테이션 펌웨어 버전을 업데이트합니다.
+     * 
+     * 도킹 스테이션의 펌웨어 버전 정보를 업데이트하고
+     * 디바이스 정보를 갱신합니다.
+     * 
+     * @param request 도킹 스테이션 펌웨어 버전 업데이트 요청
+     * @param headers 메시지 헤더 정보
+     */
     @Override
     public void dockFirmwareVersionUpdate(TopicStateRequest<DockFirmwareVersion> request, MessageHeaders headers) {
         // If the reported version is empty, it will not be processed to prevent misleading page.
@@ -259,6 +391,15 @@ public class SDKDeviceService extends AbstractDeviceService {
         }
     }
 
+    /**
+     * RC 및 드론 펌웨어 버전을 업데이트합니다.
+     * 
+     * 리모트 컨트롤과 드론의 펌웨어 버전 정보를 업데이트하고
+     * 디바이스 정보를 갱신합니다.
+     * 
+     * @param request RC 및 드론 펌웨어 버전 업데이트 요청
+     * @param headers 메시지 헤더 정보
+     */
     @Override
     public void rcAndDroneFirmwareVersionUpdate(TopicStateRequest<FirmwareVersion> request, MessageHeaders headers) {
         // If the reported version is empty, it will not be processed to prevent misleading page.
@@ -276,6 +417,15 @@ public class SDKDeviceService extends AbstractDeviceService {
         }
     }
 
+    /**
+     * RC 페이로드 펌웨어 버전을 업데이트합니다.
+     * 
+     * 리모트 컨트롤의 페이로드(카메라, 센서 등) 펌웨어 버전 정보를
+     * 업데이트하고 디바이스 정보를 갱신합니다.
+     * 
+     * @param request RC 페이로드 펌웨어 버전 업데이트 요청
+     * @param headers 메시지 헤더 정보
+     */
     @Override
     public void rcPayloadFirmwareVersionUpdate(TopicStateRequest<PayloadFirmwareVersion> request, MessageHeaders headers) {
         // If the reported version is empty, it will not be processed to prevent misleading page.
@@ -289,6 +439,15 @@ public class SDKDeviceService extends AbstractDeviceService {
         }
     }
 
+    /**
+     * 도킹 스테이션 제어 소스를 업데이트합니다.
+     * 
+     * 도킹 스테이션의 제어 소스 정보를 업데이트하고
+     * WebSocket을 통해 실시간 상태 변경을 알립니다.
+     * 
+     * @param request 도킹 스테이션 제어 소스 업데이트 요청
+     * @param headers 메시지 헤더 정보
+     */
     @Override
     public void dockControlSourceUpdate(TopicStateRequest<DockDroneControlSource> request, MessageHeaders headers) {
         // If the control source is empty, it will not be processed.
@@ -315,6 +474,15 @@ public class SDKDeviceService extends AbstractDeviceService {
                                 .build()).collect(Collectors.toList()));
     }
 
+    /**
+     * RC 제어 소스를 업데이트합니다.
+     * 
+     * 리모트 컨트롤의 제어 소스 정보를 업데이트하고
+     * WebSocket을 통해 실시간 상태 변경을 알립니다.
+     * 
+     * @param request RC 제어 소스 업데이트 요청
+     * @param headers 메시지 헤더 정보
+     */
     @Override
     public void rcControlSourceUpdate(TopicStateRequest<RcDroneControlSource> request, MessageHeaders headers) {
         // If the control source is empty, it will not be processed.
@@ -341,6 +509,15 @@ public class SDKDeviceService extends AbstractDeviceService {
                                 .build()).collect(Collectors.toList()));
     }
 
+    /**
+     * 도킹 스테이션과 서브 디바이스가 온라인 상태가 되었을 때 처리합니다.
+     * 
+     * 게이트웨이(도킹 스테이션)와 서브 디바이스(드론)의 연결을
+     * 설정하고 WebSocket을 통해 실시간 상태 변경을 알립니다.
+     * 
+     * @param gateway 게이트웨이 디바이스 정보
+     * @param subDevice 서브 디바이스 정보
+     */
     private void dockGoOnline(DeviceDTO gateway, DeviceDTO subDevice) {
         if (DeviceDomainEnum.DOCK != gateway.getDomain()) {
             return;
@@ -357,6 +534,15 @@ public class SDKDeviceService extends AbstractDeviceService {
         deviceRedisService.setDeviceOnline(subDevice);
     }
 
+    /**
+     * 서브 디바이스의 부모 디바이스를 변경합니다.
+     * 
+     * 서브 디바이스의 부모 디바이스 정보를 업데이트하고
+     * 데이터베이스에 저장합니다.
+     * 
+     * @param deviceSn 서브 디바이스 시리얼 번호
+     * @param gatewaySn 게이트웨이 시리얼 번호
+     */
     private void changeSubDeviceParent(String deviceSn, String gatewaySn) {
         List<DeviceDTO> gatewaysList = deviceService.getDevicesByParams(
                 DeviceQueryParam.builder()
@@ -375,7 +561,16 @@ public class SDKDeviceService extends AbstractDeviceService {
                 });
     }
 
-
+    /**
+     * 디바이스가 다시 온라인 상태가 되었을 때 처리합니다.
+     * 
+     * 디바이스가 재연결되었을 때 토픽을 다시 구독하고
+     * 디바이스 상태를 업데이트합니다.
+     * 
+     * @param workspaceId 워크스페이스 ID
+     * @param gatewaySn 게이트웨이 시리얼 번호
+     * @param deviceSn 디바이스 시리얼 번호
+     */
     public void deviceOnlineAgain(String workspaceId, String gatewaySn, String deviceSn) {
         DeviceDTO device = DeviceDTO.builder().loginTime(LocalDateTime.now()).deviceSn(deviceSn).build();
         DeviceDTO gateway = DeviceDTO.builder()
@@ -402,9 +597,14 @@ public class SDKDeviceService extends AbstractDeviceService {
     }
 
     /**
-     * Convert the received gateway device object into a database entity object.
-     * @param gateway
-     * @return
+     * 게이트웨이 디바이스 객체를 데이터베이스 엔티티 객체로 변환합니다.
+     * 
+     * UpdateTopo 객체를 DeviceDTO로 변환하여
+     * 데이터베이스에 저장할 수 있는 형태로 만듭니다.
+     * 
+     * @param gatewaySn 게이트웨이 시리얼 번호
+     * @param gateway 게이트웨이 토폴로지 정보
+     * @return 변환된 DeviceDTO 객체
      */
     private DeviceDTO deviceGatewayConvertToDevice(String gatewaySn, UpdateTopo gateway) {
         if (null == gateway) {
@@ -422,9 +622,13 @@ public class SDKDeviceService extends AbstractDeviceService {
     }
 
     /**
-     * Convert the received drone device object into a database entity object.
-     * @param device
-     * @return
+     * 드론 디바이스 객체를 데이터베이스 엔티티 객체로 변환합니다.
+     * 
+     * UpdateTopoSubDevice 객체를 DeviceDTO로 변환하여
+     * 데이터베이스에 저장할 수 있는 형태로 만듭니다.
+     * 
+     * @param device 서브 디바이스 토폴로지 정보
+     * @return 변환된 DeviceDTO 객체
      */
     private DeviceDTO subDeviceConvertToDevice(UpdateTopoSubDevice device) {
         if (null == device) {
@@ -439,6 +643,17 @@ public class SDKDeviceService extends AbstractDeviceService {
                 .build();
     }
 
+    /**
+     * 온라인 디바이스를 저장하거나 업데이트합니다.
+     * 
+     * 디바이스 정보를 데이터베이스에 저장하고,
+     * 부모-자식 관계를 설정합니다.
+     * 
+     * @param device 저장할 디바이스 정보
+     * @param childSn 자식 디바이스 시리얼 번호
+     * @param parentSn 부모 디바이스 시리얼 번호
+     * @return 저장된 디바이스 정보 (Optional)
+     */
     private Optional<DeviceDTO> onlineSaveDevice(DeviceDTO device, String childSn, String parentSn) {
 
         device.setChildDeviceSn(childSn);
@@ -477,6 +692,15 @@ public class SDKDeviceService extends AbstractDeviceService {
         return deviceOpt;
     }
 
+    /**
+     * 도킹 스테이션 OSD 데이터를 Redis에 저장합니다.
+     * 
+     * 도킹 스테이션의 실시간 상태 정보를 Redis에 캐싱하여
+     * 빠른 조회를 지원합니다.
+     * 
+     * @param dockSn 도킹 스테이션 시리얼 번호
+     * @param dock 도킹 스테이션 OSD 데이터
+     */
     private void fillDockOsd(String dockSn, OsdDock dock) {
         Optional<OsdDock> oldDockOpt = deviceRedisService.getDeviceOsd(dockSn, OsdDock.class);
         if (Objects.nonNull(dock.getJobNumber())) {

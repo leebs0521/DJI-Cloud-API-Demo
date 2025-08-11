@@ -28,6 +28,11 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * Amazon S3 서비스 구현 클래스
+ * 
+ * Amazon S3(Simple Storage Service)에 대한 구현을 제공합니다.
+ * AWS STS(Security Token Service)를 사용한 임시 자격 증명과 객체 관리 기능을 제공합니다.
+ * 
  * @author sean
  * @version 1.0
  * @date 2022/4/27
@@ -36,6 +41,7 @@ import java.util.Objects;
 @Service
 public class AmazonS3ServiceImpl implements IOssService {
 
+    /** Amazon S3 클라이언트 */
     private AmazonS3 client;
     
     @Override
@@ -45,11 +51,13 @@ public class AmazonS3ServiceImpl implements IOssService {
 
     @Override
     public CredentialsToken getCredentials() {
+        // AWS STS 클라이언트 생성
         AWSSecurityTokenService stsClient = AWSSecurityTokenServiceClientBuilder.standard()
                 .withCredentials(new AWSStaticCredentialsProvider(
                         new BasicAWSCredentials(OssConfiguration.accessKey, OssConfiguration.secretKey)))
                 .withRegion(OssConfiguration.region).build();
 
+        // STS 역할 가정 요청 생성
         AssumeRoleRequest request = new AssumeRoleRequest()
                 .withRoleArn(OssConfiguration.roleArn)
                 .withRoleSessionName(OssConfiguration.roleSessionName)
@@ -88,6 +96,9 @@ public class AmazonS3ServiceImpl implements IOssService {
         log.info("Upload FlighttaskCreateFile: {}", objectResult.toString());
     }
 
+    /**
+     * Amazon S3 클라이언트를 생성합니다.
+     */
     public void createClient() {
         if (Objects.nonNull(this.client)) {
             return;
@@ -101,7 +112,8 @@ public class AmazonS3ServiceImpl implements IOssService {
     }
 
     /**
-     * Configuring cross-origin resource sharing
+     * CORS(Cross-Origin Resource Sharing) 설정을 구성합니다.
+     * 웹 브라우저에서 S3 버킷에 직접 접근할 수 있도록 허용합니다.
      */
     @PostConstruct
     private void configCORS() {
