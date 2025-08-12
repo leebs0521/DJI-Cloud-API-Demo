@@ -1,0 +1,131 @@
+version: '3.8'
+
+services:
+  emqx:
+    image: emqx/emqx:4.4.18
+    container_name: dji-emqx
+    ports:
+      - "1883:1883"     # MQTT
+      - "8883:8883"     # MQTT over SSL
+      - "8083:8083"     # WebSocket
+      - "8084:8084"     # WebSocket over SSL
+      - "18083:18083"   # Dashboard
+    environment:
+      - EMQX_NAME=emqx
+      - EMQX_HOST=127.0.0.1
+
+      # 인증 설정
+      - EMQX_AUTH__USER__1__USERNAME=JavaServer
+      - EMQX_AUTH__USER__1__PASSWORD=123456
+
+      # 로그 레벨 설정
+      - EMQX_LOG__LEVEL=debug
+
+      # WebSocket 설정
+      - EMQX_LISTENER__WS__EXTERNAL=8083
+      - EMQX_LISTENER__WS__EXTERNAL__PATH=/mqtt
+
+      # 익명 접속 허용 (개발 단계에서)
+      - EMQX_ALLOW_ANONYMOUS=true
+
+    volumes:
+      - emqx_data:/opt/emqx/data
+      - emqx_log:/opt/emqx/log
+    restart: unless-stopped
+    networks:
+      - dji-network
+    healthcheck:
+      test: ["CMD", "/opt/emqx/bin/emqx_ctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  mysql:
+    image: mysql:8.0
+    container_name: dji-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cloud_sample
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    volumes:
+      - ./sql/cloud_sample.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
+    restart: unless-stopped
+    networks:
+      - dji-network
+
+  redis:
+    image: redis:7.0
+    container_name: dji-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - dji-network
+
+  # RTMP 스트리밍 서버 (nginx-rtmp 기반)
+  rtmp-server:
+    image: tiangolo/nginx-rtmp
+    container_name: dji-rtmp-server
+    ports:
+      - "1935:1935"     # RTMP 스트리밍 포트 (표준)
+      - "8082:80"       # HLS 웹 재생 포트 (8080 대신 8082 사용)
+    volumes:
+      - ./rtmp-recordings:/var/recordings    # 녹화 파일 저장
+      - ./rtmp-config:/etc/nginx/conf.d      # 설정 파일 (선택사항)
+    environment:
+      - NGINX_RTMP_MODULE=on
+    restart: unless-stopped
+    networks:
+      - dji-network
+
+  # SRS 스트리밍 서버 (대안, WebRTC 지원)
+  srs-server:
+    image: ossrs/srs:4
+    container_name: dji-srs-server
+    ports:
+      - "1936:1935"     # RTMP (nginx-rtmp와 구분)
+      - "1985:1985"     # HTTP API
+      - "8085:8080"     # HTTP 서버 (8081 대신 8085 사용)
+      - "1990:1990"     # SRS HTTP API
+      - "8000:8000"     # WebRTC
+    environment:
+      - SRS_LOG_LEVEL=info
+    restart: unless-stopped
+    networks:
+      - dji-network
+    profiles: ["srs"]   # 선택적 실행: docker-compose --profile srs up
+
+  # FFmpeg 테스트 스트림 생성기
+  test-stream:
+    image: jrottenberg/ffmpeg:4.4-alpine
+    container_name: dji-test-stream
+    command: >
+      -re -f lavfi 
+      -i "testsrc2=size=1280x720:rate=30,format=yuv420p" 
+      -f lavfi -i "sine=frequency=1000:sample_rate=44100" 
+      -c:v libx264 -preset ultrafast -tune zerolatency 
+      -c:a aac -ar 44100 -ac 2 
+      -f flv rtmp://rtmp-server:1935/live/test
+    depends_on:
+      - rtmp-server
+    restart: unless-stopped
+    networks:
+      - dji-network
+    profiles: ["test"]  # 선택적 실행: docker-compose --profile test up
+
+volumes:
+  mysql_data:
+  redis_data:
+  emqx_data:
+  emqx_log:
+
+# 네트워크 설정 (서비스간 통신 최적화)
+networks:
+  dji-network:
+    driver: bridge

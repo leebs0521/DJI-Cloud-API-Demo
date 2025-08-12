@@ -195,11 +195,23 @@ VALUES
 	(24, 0, 77, 2, 'Mavic 3M', NULL),
 	(25, 1, 68, 0, 'Mavic 3M Camera', NULL),
 	(26, 0, 89, 0, 'Matrice 350 RTK', NULL),
-	(27, 3, 2, 0, 'DJI Dock2', NULL),
+	(27, 3, 2, 0, 'DJI Dock2/3', NULL),
 	(28, 0, 91, 0, 'M3D', NULL),
 	(29, 0, 91, 1, 'M3TD', NULL),
 	(30, 1, 80, 0, 'M3D Camera', NULL),
-	(31, 1, 81, 0, 'M3TD Camera', NULL);
+	(31, 1, 81, 0, 'M3TD Camera', NULL),
+	(32, 0, 103, 0, 'M400', 'M400'), # 여기부터 새로
+	(33, 0, 77, 3, 'Mavic 3TA', 'Mavic 3TA'),
+	(34, 0, 100, 0, 'M4D', 'M4D'),
+	(35, 0, 100, 1, 'M4TD', 'M4TD'),
+	(36, 0, 99, 0, 'M4E', 'M4E'),
+	(37, 0, 99, 1, 'M4T', 'M4T'),
+	(38, 2, 174, 0, 'DJI RC Plus 2', 'DJI RC Plus 2'),
+	(39, 1, 88, 0, 'M4E Camera', 'M4E Camera'),
+	(40, 1, 89, 0, 'M4T Camera', 'M4T Camera'),
+	(41, 1, 129, 0, 'Mavic 3TA Camera', 'Mavic 3TA Camera'),
+	(42, 1, 98, 0, 'M4D Camera', 'M4D Camera'),
+	(43, 1, 99, 0, 'M4TD Camera', 'M4TD Camera');
 
 
 /*!40000 ALTER TABLE `manage_device_dictionary` ENABLE KEYS */;
