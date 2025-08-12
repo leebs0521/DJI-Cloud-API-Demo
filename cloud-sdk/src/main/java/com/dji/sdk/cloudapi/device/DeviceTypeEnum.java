@@ -9,10 +9,10 @@ import java.util.Arrays;
 
 /**
  * 디바이스 타입 열거형 클래스
- * 
+ *
  * 이 클래스는 DJI 디바이스의 구체적인 타입을 정의합니다.
  * 각 타입은 정수값으로 표현되며, 디바이스의 세부 분류를 나타냅니다.
- * 
+ *
  * @author sean
  * @version 1.7
  * @date 2023/5/26
@@ -23,8 +23,10 @@ public enum DeviceTypeEnum {
     /**
      * 드론 타입들
      */
-    /** M350 드론 (타입값: 89) */
-    M350(89),
+    /** M400 드론 (타입값: 103) */
+    M400(103),
+    /** M350 드론 또는 M4T 카메라 (타입값: 89) */
+    M350_OR_M4T_CAMERA(89),
     /** M300 드론 (타입값: 60) */
     M300(60),
     /** M30 또는 M3T 카메라 (타입값: 67) */
@@ -33,6 +35,10 @@ public enum DeviceTypeEnum {
     M3E(77),
     /** M3D 드론 (타입값: 91) */
     M3D(91),
+    /** M4D 드론 (타입값: 100) */
+    M4D(100),
+    /** M4S 드론 또는 M4TD 카메라 (타입값: 99) */
+    M4S_OR_M4TD_CAMERA(99),
 
     /**
      * 페이로드 타입들
@@ -55,6 +61,8 @@ public enum DeviceTypeEnum {
     M30_CAMERA(52),
     /** M30T 카메라 (타입값: 53) */
     M30T_CAMERA(53),
+    /** M4E 카메라 (타입값: 88) */
+    M4E_CAMERA(88),
     /** H20N 카메라 (타입값: 61) */
     H20N(61),
     /** 도크 카메라 (타입값: 165) */
@@ -63,12 +71,16 @@ public enum DeviceTypeEnum {
     L1(90742),
     /** M3E 카메라 (타입값: 66) */
     M3E_CAMERA(66),
+    /** M3T 카메라 (타입값: 129) */
+    M3TA_CAMERA(129),
     /** M3M 카메라 (타입값: 68) */
     M3M_CAMERA(68),
     /** M3D 카메라 (타입값: 80) */
     M3D_CAMERA(80),
     /** M3TD 카메라 (타입값: 81) */
     M3TD_CAMERA(81),
+    /** M4D 카메라 (타입값: 98) */
+    M4D_CAMERA(98),
 
     /**
      * 리모트 컨트롤 타입들
@@ -77,6 +89,8 @@ public enum DeviceTypeEnum {
     RC(56),
     /** RC Plus 리모트 컨트롤 (타입값: 119) */
     RC_PLUS(119),
+    /** RC Plus2 리모트 컨트롤 (타입값: 174) */
+    RC_PLUS2(174),
     /** RC Pro 리모트 컨트롤 (타입값: 144) */
     RC_PRO(144),
 
@@ -85,8 +99,8 @@ public enum DeviceTypeEnum {
      */
     /** 도크 (타입값: 1) */
     DOCK(1),
-    /** 도크2 (타입값: 2) */
-    DOCK2(2),
+    /** 도크2 또는 3 (타입값: 2) */
+    DOCK2_OR_DOCK3(2),
     ;
 
     /**
@@ -96,7 +110,7 @@ public enum DeviceTypeEnum {
 
     /**
      * 디바이스 타입 열거형 생성자
-     * 
+     *
      * @param type 타입 정수값
      */
     DeviceTypeEnum(int type) {
@@ -105,7 +119,7 @@ public enum DeviceTypeEnum {
 
     /**
      * 타입 정수값을 반환합니다.
-     * 
+     *
      * @return 타입 정수값
      */
     @JsonValue
@@ -115,7 +129,7 @@ public enum DeviceTypeEnum {
 
     /**
      * 정수값으로 디바이스 타입을 찾습니다.
-     * 
+     *
      * @param type 찾을 타입 정수값
      * @return 찾은 디바이스 타입 열거형
      * @throws CloudSDKException 해당하는 타입을 찾을 수 없는 경우

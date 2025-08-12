@@ -9,11 +9,11 @@ import java.util.Arrays;
 
 /**
  * DJI 디바이스 모델 열거형 클래스
- * 
+ *
  * 이 클래스는 DJI의 모든 디바이스 모델을 정의합니다.
- * 각 디바이스는 도메인, 타입, 서브타입으로 구성되며, 
+ * 각 디바이스는 도메인, 타입, 서브타입으로 구성되며,
  * "domain-type-subType" 형식의 문자열로 표현됩니다.
- * 
+ *
  * @author sean
  * @version 1.7
  * @date 2023/5/19
@@ -24,8 +24,10 @@ public enum DeviceEnum {
     /**
      * 드론 모델들
      */
+    /** M400 드론**/
+    M400(DeviceDomainEnum.DRONE, DeviceTypeEnum.M400, DeviceSubTypeEnum.ZERO),
     /** M350 드론 */
-    M350(DeviceDomainEnum.DRONE, DeviceTypeEnum.M350, DeviceSubTypeEnum.ZERO),
+    M350(DeviceDomainEnum.DRONE, DeviceTypeEnum.M350_OR_M4T_CAMERA, DeviceSubTypeEnum.ZERO),
     /** M300 드론 */
     M300(DeviceDomainEnum.DRONE, DeviceTypeEnum.M300, DeviceSubTypeEnum.ZERO),
     /** M30 드론 */
@@ -38,10 +40,20 @@ public enum DeviceEnum {
     M3T(DeviceDomainEnum.DRONE, DeviceTypeEnum.M3E, DeviceSubTypeEnum.ONE),
     /** M3M 드론 */
     M3M(DeviceDomainEnum.DRONE, DeviceTypeEnum.M3E, DeviceSubTypeEnum.TWO),
+    /** M3TA 드론 */
+    M3TA(DeviceDomainEnum.DRONE, DeviceTypeEnum.M3E, DeviceSubTypeEnum.THREE),
     /** M3D 드론 */
     M3D(DeviceDomainEnum.DRONE, DeviceTypeEnum.M3D, DeviceSubTypeEnum.ZERO),
     /** M3TD 드론 */
     M3TD(DeviceDomainEnum.DRONE, DeviceTypeEnum.M3D, DeviceSubTypeEnum.ONE),
+    /** M4D 드론 */
+    M4D(DeviceDomainEnum.DRONE, DeviceTypeEnum.M4D, DeviceSubTypeEnum.ZERO),
+    /** M4TD 드론 */
+    M4TD(DeviceDomainEnum.DRONE, DeviceTypeEnum.M4D, DeviceSubTypeEnum.ONE),
+    /** M4E 드론 */
+    M4E(DeviceDomainEnum.DRONE, DeviceTypeEnum.M4S_OR_M4TD_CAMERA, DeviceSubTypeEnum.ZERO),
+    /** M4T 드론 */
+    M4T(DeviceDomainEnum.DRONE, DeviceTypeEnum.M4S_OR_M4TD_CAMERA, DeviceSubTypeEnum.ONE),
 
     /**
      * 페이로드 모델들
@@ -64,6 +76,10 @@ public enum DeviceEnum {
     M30_CAMERA(DeviceDomainEnum.PAYLOAD, DeviceTypeEnum.M30_CAMERA, DeviceSubTypeEnum.ZERO),
     /** M30T 카메라 */
     M30T_CAMERA(DeviceDomainEnum.PAYLOAD, DeviceTypeEnum.M30T_CAMERA, DeviceSubTypeEnum.ZERO),
+    /** M4E 카메라 **/
+    M4E_CAMERA(DeviceDomainEnum.PAYLOAD, DeviceTypeEnum.M4E_CAMERA, DeviceSubTypeEnum.ZERO),
+    /** M4T 카메라 **/
+    M4T_CAMERA(DeviceDomainEnum.PAYLOAD, DeviceTypeEnum.M350_OR_M4T_CAMERA, DeviceSubTypeEnum.ZERO),
     /** H20N 카메라 */
     H20N(DeviceDomainEnum.PAYLOAD, DeviceTypeEnum.H20N, DeviceSubTypeEnum.ZERO),
     /** 도크 카메라 */
@@ -74,12 +90,18 @@ public enum DeviceEnum {
     M3E_CAMERA(DeviceDomainEnum.PAYLOAD, DeviceTypeEnum.M3E_CAMERA, DeviceSubTypeEnum.ZERO),
     /** M3T 카메라 */
     M3T_CAMERA(DeviceDomainEnum.PAYLOAD, DeviceTypeEnum.M30_OR_M3T_CAMERA, DeviceSubTypeEnum.ZERO),
+    /** M3TA 카메라 */
+    M3TA_CAMERA(DeviceDomainEnum.PAYLOAD, DeviceTypeEnum.M3TA_CAMERA, DeviceSubTypeEnum.ZERO),
     /** M3M 카메라 */
     M3M_CAMERA(DeviceDomainEnum.PAYLOAD, DeviceTypeEnum.M3M_CAMERA, DeviceSubTypeEnum.ZERO),
     /** M3D 카메라 */
     M3D_CAMERA(DeviceDomainEnum.PAYLOAD, DeviceTypeEnum.M3D_CAMERA, DeviceSubTypeEnum.ZERO),
     /** M3TD 카메라 */
     M3TD_CAMERA(DeviceDomainEnum.PAYLOAD, DeviceTypeEnum.M3TD_CAMERA, DeviceSubTypeEnum.ZERO),
+    /** M4D 카메라 */
+    M4D_CAMERA(DeviceDomainEnum.PAYLOAD, DeviceTypeEnum.M4D_CAMERA, DeviceSubTypeEnum.ZERO),
+    /** M4TD 카메라 */
+    M4TD_CAMERA(DeviceDomainEnum.PAYLOAD, DeviceTypeEnum.M4S_OR_M4TD_CAMERA, DeviceSubTypeEnum.ZERO),
 
     /**
      * 리모트 컨트롤 모델들
@@ -88,6 +110,8 @@ public enum DeviceEnum {
     RC(DeviceDomainEnum.REMOTER_CONTROL, DeviceTypeEnum.RC, DeviceSubTypeEnum.ZERO),
     /** RC Plus 리모트 컨트롤 */
     RC_PLUS(DeviceDomainEnum.REMOTER_CONTROL, DeviceTypeEnum.RC_PLUS, DeviceSubTypeEnum.ZERO),
+    /** RC Plus2 리모트 컨트롤 */
+    RC_PLUS2(DeviceDomainEnum.REMOTER_CONTROL, DeviceTypeEnum.RC_PLUS2, DeviceSubTypeEnum.ZERO),
     /** RC Pro 리모트 컨트롤 */
     RC_PRO(DeviceDomainEnum.REMOTER_CONTROL, DeviceTypeEnum.RC_PRO, DeviceSubTypeEnum.ZERO),
 
@@ -96,10 +120,9 @@ public enum DeviceEnum {
      */
     /** 도크 */
     DOCK(DeviceDomainEnum.DOCK, DeviceTypeEnum.DOCK, DeviceSubTypeEnum.ZERO),
-    /** 도크2 */
-    DOCK2(DeviceDomainEnum.DOCK, DeviceTypeEnum.DOCK2, DeviceSubTypeEnum.ZERO),
+    /** 도크2 또는 3 */
+    DOCK2_OR_DOCK3(DeviceDomainEnum.DOCK, DeviceTypeEnum.DOCK2_OR_DOCK3, DeviceSubTypeEnum.ZERO),
     ;
-
     /**
      * 디바이스 도메인 (DRONE, PAYLOAD, REMOTER_CONTROL, DOCK)
      */
@@ -120,7 +143,7 @@ public enum DeviceEnum {
 
     /**
      * 디바이스 열거형 생성자
-     * 
+     *
      * @param domain 디바이스 도메인
      * @param type 디바이스 타입
      * @param subType 디바이스 서브타입
@@ -133,7 +156,7 @@ public enum DeviceEnum {
 
     /**
      * 디바이스 도메인을 반환합니다.
-     * 
+     *
      * @return 디바이스 도메인
      */
     public DeviceDomainEnum getDomain() {
@@ -142,7 +165,7 @@ public enum DeviceEnum {
 
     /**
      * 디바이스 타입을 반환합니다.
-     * 
+     *
      * @return 디바이스 타입
      */
     public DeviceTypeEnum getType() {
@@ -151,7 +174,7 @@ public enum DeviceEnum {
 
     /**
      * 디바이스 서브타입을 반환합니다.
-     * 
+     *
      * @return 디바이스 서브타입
      */
     public DeviceSubTypeEnum getSubType() {
@@ -160,7 +183,7 @@ public enum DeviceEnum {
 
     /**
      * 디바이스를 "domain-type-subType" 형식의 문자열로 반환합니다.
-     * 
+     *
      * @return 디바이스 식별 문자열
      */
     @JsonValue
@@ -170,7 +193,7 @@ public enum DeviceEnum {
 
     /**
      * 도메인, 타입, 서브타입으로 디바이스를 찾습니다.
-     * 
+     *
      * @param domain 디바이스 도메인
      * @param type 디바이스 타입
      * @param subType 디바이스 서브타입
@@ -182,7 +205,7 @@ public enum DeviceEnum {
 
     /**
      * 도메인, 타입, 서브타입의 정수값으로 디바이스를 찾습니다.
-     * 
+     *
      * @param domain 디바이스 도메인 정수값
      * @param type 디바이스 타입 정수값
      * @param subType 디바이스 서브타입 정수값
@@ -198,7 +221,7 @@ public enum DeviceEnum {
 
     /**
      * 문자열 키로 디바이스를 찾습니다.
-     * 
+     *
      * @param key "domain-type-subType" 형식의 디바이스 키
      * @return 찾은 디바이스 열거형
      * @throws CloudSDKException 해당하는 디바이스를 찾을 수 없는 경우

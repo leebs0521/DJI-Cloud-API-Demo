@@ -19,7 +19,6 @@ import com.dji.sdk.mqtt.services.ServicesReplyData;
 import com.dji.sdk.mqtt.services.TopicServicesResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.integration.annotation.ServiceActivator;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 
 import javax.annotation.Resource;
@@ -271,7 +270,7 @@ public abstract class AbstractDebugService {
      * @param gateway 게이트웨이 관리자
      * @return 서비스 응답
      */
-    @CloudSDKVersion(exclude = {GatewayTypeEnum.RC, GatewayTypeEnum.DOCK2})
+    @CloudSDKVersion(exclude = {GatewayTypeEnum.RC, GatewayTypeEnum.DOCK2_OR_DOCK3})
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> putterOpen(GatewayManager gateway) {
         return servicesPublish.publish(
                 new TypeReference<RemoteDebugResponse>() {},
@@ -285,7 +284,7 @@ public abstract class AbstractDebugService {
      * @param gateway 게이트웨이 관리자
      * @return 서비스 응답
      */
-    @CloudSDKVersion(exclude = {GatewayTypeEnum.RC, GatewayTypeEnum.DOCK2})
+    @CloudSDKVersion(exclude = {GatewayTypeEnum.RC, GatewayTypeEnum.DOCK2_OR_DOCK3})
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> putterClose(GatewayManager gateway) {
         return servicesPublish.publish(
                 new TypeReference<RemoteDebugResponse>() {},
@@ -384,7 +383,7 @@ public abstract class AbstractDebugService {
      * @param request  데이터
      * @return 서비스 응답
      */
-    @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2)
+    @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2_OR_DOCK3)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> esimActivate(GatewayManager gateway, EsimActivateRequest request) {
         return servicesPublish.publish(
                 new TypeReference<RemoteDebugResponse>() {},
@@ -400,7 +399,7 @@ public abstract class AbstractDebugService {
      * @param request  데이터
      * @return 서비스 응답
      */
-    @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2)
+    @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2_OR_DOCK3)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> simSlotSwitch(GatewayManager gateway, SimSlotSwitchRequest request) {
         return servicesPublish.publish(
                 new TypeReference<RemoteDebugResponse>() {},
@@ -416,7 +415,7 @@ public abstract class AbstractDebugService {
      * @param request  데이터
      * @return 서비스 응답
      */
-    @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2)
+    @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2_OR_DOCK3)
     public TopicServicesResponse<ServicesReplyData<RemoteDebugResponse>> esimOperatorSwitch(GatewayManager gateway, EsimOperatorSwitchRequest request) {
         return servicesPublish.publish(
                 new TypeReference<RemoteDebugResponse>() {},

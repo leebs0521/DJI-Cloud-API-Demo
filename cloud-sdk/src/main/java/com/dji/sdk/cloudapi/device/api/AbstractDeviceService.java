@@ -15,7 +15,6 @@ import com.dji.sdk.mqtt.state.TopicStateResponse;
 import com.dji.sdk.mqtt.status.TopicStatusRequest;
 import com.dji.sdk.mqtt.status.TopicStatusResponse;
 import org.springframework.integration.annotation.ServiceActivator;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 
 /**
@@ -270,7 +269,7 @@ public class AbstractDeviceService {
      * @param request 데이터
      * @param headers 메시지 헤더
      */
-    @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2)
+    @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2_OR_DOCK3)
     @ServiceActivator(inputChannel = ChannelName.INBOUND_STATE_DOCK_AND_DRONE_DONGLE_INFOS, outputChannel = ChannelName.OUTBOUND_STATE)
     public TopicStateResponse<MqttReply> dongleInfos(TopicStateRequest<DongleInfos> request, MessageHeaders headers) {
         throw new UnsupportedOperationException("dongleInfos not implemented");

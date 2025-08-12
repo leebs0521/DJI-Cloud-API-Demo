@@ -19,7 +19,6 @@ import com.dji.sdk.mqtt.services.TopicServicesResponse;
 import com.dji.sdk.mqtt.state.TopicStateRequest;
 import com.dji.sdk.mqtt.state.TopicStateResponse;
 import org.springframework.integration.annotation.ServiceActivator;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 
 import javax.annotation.Resource;
@@ -43,7 +42,7 @@ public abstract class AbstractOfflineMapService {
      * @param headers 메시지 헤더
      * @return 상태 응답
      */
-    @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2)
+    @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2_OR_DOCK3)
     @ServiceActivator(inputChannel = ChannelName.INBOUND_STATE_DOCK_DRONE_OFFLINE_MAP_ENABLE, outputChannel = ChannelName.OUTBOUND_STATE)
     public TopicStateResponse<MqttReply> dockDroneOfflineMapEnable(TopicStateRequest<DockDroneOfflineMapEnable> request, MessageHeaders headers) {
         throw new UnsupportedOperationException("dockDroneOfflineMapEnable not implemented");
@@ -56,7 +55,7 @@ public abstract class AbstractOfflineMapService {
      * @param gateway 게이트웨이 디바이스
      * @return 서비스 응답
      */
-    @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2)
+    @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2_OR_DOCK3)
     public TopicServicesResponse<ServicesReplyData> offlineMapUpdate(GatewayManager gateway) {
         return servicesPublish.publish(
                 gateway.getGatewaySn(),
@@ -70,7 +69,7 @@ public abstract class AbstractOfflineMapService {
      * @return 이벤트 응답
      */
     @ServiceActivator(inputChannel = ChannelName.INBOUND_EVENTS_OFFLINE_MAP_SYNC_PROGRESS, outputChannel = ChannelName.OUTBOUND_EVENTS)
-    @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2)
+    @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2_OR_DOCK3)
     public TopicRequestsResponse<MqttReply> offlineMapSyncProgress(TopicRequestsRequest<OfflineMapSyncProgress> request, MessageHeaders headers) {
         throw new UnsupportedOperationException("offlineMapSyncProgress not implemented");
     }
@@ -85,7 +84,7 @@ public abstract class AbstractOfflineMapService {
      * @return 요청 응답
      */
     @ServiceActivator(inputChannel = ChannelName.INBOUND_REQUESTS_OFFLINE_MAP_GET, outputChannel = ChannelName.OUTBOUND_REQUESTS)
-    @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2)
+    @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2_OR_DOCK3)
     public TopicRequestsResponse<MqttReply<OfflineMapGetResponse>> offlineMapGet(TopicRequestsRequest<OfflineMapGetRequest> request, MessageHeaders headers) {
         throw new UnsupportedOperationException("offlineMapGet not implemented");
     }

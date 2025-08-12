@@ -111,7 +111,7 @@ public class StateRouter {
                 // 리모컨 타입인 경우 RC 상태 데이터 키 열거형에서 찾기
                 return RcStateDataKeyEnum.find(keys).getClassType();
             case DOCK:
-            case DOCK2:
+            case DOCK2_OR_DOCK3:
                 // 도크 타입인 경우 도크 상태 데이터 키 열거형에서 찾기
                 return DockStateDataKeyEnum.find(keys).getClassType();
             default:

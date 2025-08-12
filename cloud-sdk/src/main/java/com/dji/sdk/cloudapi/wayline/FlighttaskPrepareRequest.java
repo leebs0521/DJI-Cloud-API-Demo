@@ -186,7 +186,7 @@ public class FlighttaskPrepareRequest extends BaseModel {
      * V1_0_1 버전부터 DOCK2에서 지원됩니다.
      */
     @NotNull
-    @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2)
+    @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_1, include = GatewayTypeEnum.DOCK2_OR_DOCK3)
     private WaylinePrecisionTypeEnum waylinePrecisionType;
 
     public FlighttaskPrepareRequest() {}

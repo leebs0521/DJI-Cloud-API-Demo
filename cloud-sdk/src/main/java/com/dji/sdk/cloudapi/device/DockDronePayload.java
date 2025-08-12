@@ -110,7 +110,7 @@ public class DockDronePayload {
     /**
      * 줌 배율 (DOCK2에서만 지원)
      */
-    @CloudSDKVersion(include = GatewayTypeEnum.DOCK2)
+    @CloudSDKVersion(include = GatewayTypeEnum.DOCK2_OR_DOCK3)
     private Float zoomFactor;
 
     /**
