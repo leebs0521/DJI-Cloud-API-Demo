@@ -41,6 +41,36 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * DJI Cloud API 웨이라인 작업 서비스 구현 클래스
+ *
+ * 이 클래스는 IWaylineJobService 인터페이스의 실제 구현체로, 웨이라인 작업의
+ * 전체 생명주기를 관리합니다. 웨이라인 작업의 생성, 조회, 업데이트, 상태 관리,
+ * 미디어 파일 카운트 동기화 등의 기능을 제공합니다.
+ *
+ * 주요 기능:
+ * - 웨이라인 작업 생성 (즉시 실행, 부모 작업 기반)
+ * - 웨이라인 작업 조회 (단일, 목록, 조건부)
+ * - 웨이라인 작업 상태 관리 및 업데이트
+ * - Dock 및 드론 상태 기반 웨이라인 상태 판단
+ * - 미디어 파일 업로드 진행률 추적
+ * - Redis 캐시를 통한 실시간 상태 관리
+ *
+ * 작업 상태:
+ * - PENDING: 대기 중
+ * - IN_PROGRESS: 실행 중
+ * - PAUSED: 일시정지
+ * - COMPLETED: 완료
+ * - FAILED: 실패
+ * - UNKNOWN: 알 수 없음
+ *
+ * 의존성:
+ * - IWaylineJobMapper: 데이터베이스 접근
+ * - IWaylineFileService: 웨이라인 파일 관리
+ * - IDeviceService: 디바이스 관리
+ * - IFileService: 미디어 파일 관리
+ * - IDeviceRedisService: 디바이스 Redis 캐시
+ * - IWaylineRedisService: 웨이라인 Redis 캐시
+ *
  * @author sean
  * @version 1.1
  * @date 2022/6/1
@@ -50,27 +80,57 @@ import java.util.stream.Collectors;
 @Slf4j
 public class WaylineJobServiceImpl implements IWaylineJobService {
 
+    /**
+     * 웨이라인 작업 데이터베이스 접근 매퍼
+     */
     @Autowired
     private IWaylineJobMapper mapper;
 
+    /**
+     * 웨이라인 파일 서비스
+     */
     @Autowired
     private IWaylineFileService waylineFileService;
 
+    /**
+     * 디바이스 서비스
+     */
     @Autowired
     private IDeviceService deviceService;
 
+    /**
+     * JSON 직렬화/역직렬화를 위한 ObjectMapper
+     */
     @Autowired
     private ObjectMapper objectMapper;
 
+    /**
+     * 파일 서비스 (미디어 파일 관리)
+     */
     @Autowired
     private IFileService fileService;
 
+    /**
+     * 디바이스 Redis 서비스
+     */
     @Autowired
     private IDeviceRedisService deviceRedisService;
 
+    /**
+     * 웨이라인 Redis 서비스
+     */
     @Autowired
     private IWaylineRedisService waylineRedisService;
 
+    /**
+     * 웨이라인 작업을 데이터베이스에 삽입
+     *
+     * 웨이라인 작업 엔티티를 데이터베이스에 저장하고
+     * 성공 시 DTO로 변환하여 반환합니다.
+     *
+     * @param jobEntity 저장할 웨이라인 작업 엔티티
+     * @return 저장된 웨이라인 작업 DTO (Optional)
+     */
     private Optional<WaylineJobDTO> insertWaylineJob(WaylineJobEntity jobEntity) {
         int id = mapper.insert(jobEntity);
         if (id <= 0) {
@@ -79,12 +139,25 @@ public class WaylineJobServiceImpl implements IWaylineJobService {
         return Optional.ofNullable(this.entity2Dto(jobEntity));
     }
 
+    /**
+     * 새로운 웨이라인 작업 생성
+     *
+     * 사용자가 지정한 파라미터를 기반으로 새로운 웨이라인 작업을 생성합니다.
+     * 즉시 실행 작업으로 분류되며, 백엔드에서 시간을 할당합니다.
+     *
+     * @param param 작업 생성 파라미터
+     * @param workspaceId 워크스페이스 ID
+     * @param username 작업 생성자
+     * @param beginTime 작업 시작 시간 (Unix timestamp)
+     * @param endTime 작업 종료 시간 (Unix timestamp)
+     * @return 생성된 웨이라인 작업 DTO (Optional)
+     */
     @Override
     public Optional<WaylineJobDTO> createWaylineJob(CreateJobParam param, String workspaceId, String username, Long beginTime, Long endTime) {
         if (Objects.isNull(param)) {
             return Optional.empty();
         }
-        // Immediate tasks, allocating time on the backend.
+        // 즉시 실행 작업으로 백엔드에서 시간 할당
         WaylineJobEntity jobEntity = WaylineJobEntity.builder()
                 .name(param.getName())
                 .dockSn(param.getDockSn())
@@ -105,6 +178,16 @@ public class WaylineJobServiceImpl implements IWaylineJobService {
         return insertWaylineJob(jobEntity);
     }
 
+    /**
+     * 부모 작업을 기반으로 웨이라인 작업 생성
+     *
+     * 기존 웨이라인 작업을 복제하여 새로운 작업을 생성합니다.
+     * 오류 코드와 완료 시간을 초기화하고 상태를 PENDING으로 설정합니다.
+     *
+     * @param workspaceId 워크스페이스 ID
+     * @param parentId 부모 작업 ID
+     * @return 생성된 웨이라인 작업 DTO (Optional)
+     */
     @Override
     public Optional<WaylineJobDTO> createWaylineJobByParent(String workspaceId, String parentId) {
         Optional<WaylineJobDTO> parentJobOpt = this.getJobByJobId(workspaceId, parentId);
@@ -122,6 +205,17 @@ public class WaylineJobServiceImpl implements IWaylineJobService {
         return this.insertWaylineJob(jobEntity);
     }
 
+    /**
+     * 조건에 따른 웨이라인 작업 목록 조회
+     *
+     * 워크스페이스 ID, 작업 ID 목록, 상태를 조건으로 하여
+     * 웨이라인 작업 목록을 조회합니다.
+     *
+     * @param workspaceId 워크스페이스 ID
+     * @param jobIds 작업 ID 컬렉션
+     * @param status 작업 상태
+     * @return 웨이라인 작업 DTO 목록
+     */
     public List<WaylineJobDTO> getJobsByConditions(String workspaceId, Collection<String> jobIds, WaylineJobStatusEnum status) {
         return mapper.selectList(
                 new LambdaQueryWrapper<WaylineJobEntity>()
@@ -134,6 +228,15 @@ public class WaylineJobServiceImpl implements IWaylineJobService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 작업 ID로 웨이라인 작업 조회
+     *
+     * 워크스페이스 ID와 작업 ID를 사용하여 특정 웨이라인 작업을 조회합니다.
+     *
+     * @param workspaceId 워크스페이스 ID
+     * @param jobId 작업 ID
+     * @return 웨이라인 작업 DTO (Optional)
+     */
     @Override
     public Optional<WaylineJobDTO> getJobByJobId(String workspaceId, String jobId) {
         WaylineJobEntity jobEntity = mapper.selectOne(
@@ -143,6 +246,14 @@ public class WaylineJobServiceImpl implements IWaylineJobService {
         return Optional.ofNullable(entity2Dto(jobEntity));
     }
 
+    /**
+     * 웨이라인 작업 업데이트
+     *
+     * 웨이라인 작업 DTO의 정보를 데이터베이스에 업데이트합니다.
+     *
+     * @param dto 업데이트할 웨이라인 작업 DTO
+     * @return 업데이트 성공 여부
+     */
     @Override
     public Boolean updateJob(WaylineJobDTO dto) {
         return mapper.update(this.dto2Entity(dto),
@@ -150,6 +261,17 @@ public class WaylineJobServiceImpl implements IWaylineJobService {
                         .eq(WaylineJobEntity::getJobId, dto.getJobId())) > 0;
     }
 
+    /**
+     * 워크스페이스별 웨이라인 작업 목록 조회 (페이징)
+     *
+     * 특정 워크스페이스의 웨이라인 작업 목록을 페이징 처리하여 조회합니다.
+     * ID 기준 내림차순으로 정렬됩니다.
+     *
+     * @param workspaceId 워크스페이스 ID
+     * @param page 페이지 번호
+     * @param pageSize 페이지 크기
+     * @return 페이징된 웨이라인 작업 목록
+     */
     @Override
     public PaginationData<WaylineJobDTO> getJobsByWorkspaceId(String workspaceId, long page, long pageSize) {
         Page<WaylineJobEntity> pageData = mapper.selectPage(
@@ -165,6 +287,20 @@ public class WaylineJobServiceImpl implements IWaylineJobService {
         return new PaginationData<WaylineJobDTO>(records, new Pagination(pageData.getCurrent(), pageData.getSize(), pageData.getTotal()));
     }
 
+    /**
+     * 웨이라인 작업 DTO를 엔티티로 변환
+     *
+     * WaylineJobDTO를 WaylineJobEntity로 변환하여
+     * 데이터베이스 저장에 적합한 형태로 만듭니다.
+     *
+     * 변환 내용:
+     * - LocalDateTime을 Unix timestamp로 변환
+     * - Enum 타입을 정수값으로 변환
+     * - 기타 메타데이터 복사
+     *
+     * @param dto 웨이라인 작업 DTO
+     * @return 웨이라인 작업 엔티티
+     */
     private WaylineJobEntity dto2Entity(WaylineJobDTO dto) {
         WaylineJobEntity.WaylineJobEntityBuilder builder = WaylineJobEntity.builder();
         if (dto == null) {
@@ -200,6 +336,21 @@ public class WaylineJobServiceImpl implements IWaylineJobService {
                 .build();
     }
 
+    /**
+     * Dock의 웨이라인 상태 조회
+     *
+     * 특정 Dock의 현재 웨이라인 상태를 판단합니다.
+     * Dock과 드론의 OSD 정보를 기반으로 상태를 결정합니다.
+     *
+     * 상태 판단 로직:
+     * 1. Dock이 온라인이고 자식 디바이스(드론)가 연결되어 있는지 확인
+     * 2. Dock이 WORKING 모드인지 확인
+     * 3. 드론이 웨이라인/수동/자동 이륙 모드인지 확인
+     * 4. Redis에서 일시정지/실행 중인 작업 정보 확인
+     *
+     * @param dockSn Dock 시리얼 번호
+     * @return 웨이라인 작업 상태
+     */
     public WaylineJobStatusEnum getWaylineState(String dockSn) {
         Optional<DeviceDTO> dockOpt = deviceRedisService.getDeviceOnline(dockSn);
         if (dockOpt.isEmpty() || !StringUtils.hasText(dockOpt.get().getChildDeviceSn())) {
@@ -225,6 +376,22 @@ public class WaylineJobServiceImpl implements IWaylineJobService {
         return WaylineJobStatusEnum.UNKNOWN;
     }
 
+    /**
+     * 웨이라인 작업 엔티티를 DTO로 변환
+     *
+     * WaylineJobEntity를 WaylineJobDTO로 변환하여
+     * API 응답에 적합한 형태로 만듭니다.
+     *
+     * 변환 내용:
+     * - Unix timestamp를 LocalDateTime으로 변환
+     * - 정수값을 Enum 타입으로 변환
+     * - 웨이라인 파일명과 Dock명 조회
+     * - Redis에서 실시간 진행률 정보 조회
+     * - 미디어 파일 업로드 진행률 동기화
+     *
+     * @param entity 웨이라인 작업 엔티티
+     * @return 웨이라인 작업 DTO
+     */
     private WaylineJobDTO entity2Dto(WaylineJobEntity entity) {
         if (entity == null) {
             return null;
@@ -273,7 +440,7 @@ public class WaylineJobServiceImpl implements IWaylineJobService {
             return builder.build();
         }
 
-        // sync the number of media files
+        // 미디어 파일 개수 동기화
         String key = RedisConst.MEDIA_HIGHEST_PRIORITY_PREFIX + entity.getDockSn();
         String countKey = RedisConst.MEDIA_FILE_PREFIX + entity.getDockSn();
         Object mediaFileCount = RedisOpsUtils.hashGet(countKey, entity.getJobId());
@@ -284,7 +451,7 @@ public class WaylineJobServiceImpl implements IWaylineJobService {
         }
 
         int uploadedSize = fileService.getFilesByWorkspaceAndJobId(entity.getWorkspaceId(), entity.getJobId()).size();
-        // All media for this job have been uploaded.
+        // 이 작업의 모든 미디어가 업로드됨
         if (uploadedSize >= entity.getMediaCount()) {
             return builder.uploadedCount(uploadedSize).build();
         }
