@@ -20,21 +20,24 @@ import java.util.Map;
 /**
  * MQTT 프로퍼티 설정 클래스
  * MQTT 클라이언트 연결 설정과 관련된 프로퍼티를 관리
- * 
+ *
  * @author sean.zhou
- * @date 2021/11/10
  * @version 0.1
+ * @date 2021/11/10
  */
 @Configuration
 @Data
 @ConfigurationProperties
 public class MqttPropertyConfiguration {
 
-    /** MQTT 클라이언트 옵션 맵 */
+    /**
+     * MQTT 클라이언트 옵션 맵
+     */
     private static Map<MqttUseEnum, MqttClientOptions> mqtt;
 
     /**
      * MQTT 클라이언트 옵션 맵을 설정합니다.
+     *
      * @param mqtt MQTT 클라이언트 옵션 맵
      */
     public void setMqtt(Map<MqttUseEnum, MqttClientOptions> mqtt) {
@@ -43,6 +46,7 @@ public class MqttPropertyConfiguration {
 
     /**
      * 기본 링크의 MQTT 클라이언트 설정 옵션을 가져옵니다.
+     *
      * @return 기본 MQTT 클라이언트 옵션
      */
     static MqttClientOptions getBasicClientOptions() {
@@ -54,6 +58,7 @@ public class MqttPropertyConfiguration {
 
     /**
      * 기본 링크의 MQTT 주소를 가져옵니다.
+     *
      * @return 기본 MQTT 주소
      */
     public static String getBasicMqttAddress() {
@@ -62,13 +67,19 @@ public class MqttPropertyConfiguration {
 
     /**
      * 다양한 클라이언트의 매개변수에 따라 MQTT 주소를 조합합니다.
+     *
      * @param options MQTT 클라이언트 옵션
      * @return 조합된 MQTT 주소
      */
     private static String getMqttAddress(MqttClientOptions options) {
+        String host = options.getHost().trim();
+        if (host.equals("localhost")) {
+            host = "192.168.0.57";
+        }
+
         StringBuilder addr = new StringBuilder()
                 .append(options.getProtocol().getProtocolAddr())
-                .append(options.getHost().trim())
+                .append(host)
                 .append(":")
                 .append(options.getPort());
         // WebSocket 프로토콜인 경우 경로 추가
@@ -81,10 +92,11 @@ public class MqttPropertyConfiguration {
 
     /**
      * DRC 링크의 MQTT 클라이언트 연결 매개변수를 가져옵니다.
+     *
      * @param clientId 클라이언트 ID
      * @param username 사용자명
-     * @param age 토큰의 유효 기간 (초 단위)
-     * @param map 토큰에 추가할 사용자 정의 데이터
+     * @param age      토큰의 유효 기간 (초 단위)
+     * @param map      토큰에 추가할 사용자 정의 데이터
      * @return DRC 모드 MQTT 브로커 설정
      */
     public static DrcModeMqttBroker getMqttBrokerWithDrc(String clientId, String username, Long age, Map<String, ?> map) {
@@ -107,13 +119,14 @@ public class MqttPropertyConfiguration {
 
     /**
      * MQTT 연결 옵션을 생성합니다.
+     *
      * @return MQTT 연결 옵션
      */
     @Bean
     public MqttConnectOptions mqttConnectOptions() {
         MqttClientOptions customizeOptions = getBasicClientOptions();
         MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
-        mqttConnectOptions.setServerURIs(new String[]{ getBasicMqttAddress() });
+        mqttConnectOptions.setServerURIs(new String[]{getBasicMqttAddress()});
         mqttConnectOptions.setUserName(customizeOptions.getUsername());
         mqttConnectOptions.setPassword(StringUtils.hasText(customizeOptions.getPassword()) ?
                 customizeOptions.getPassword().toCharArray() : new char[0]);
@@ -124,6 +137,7 @@ public class MqttPropertyConfiguration {
 
     /**
      * MQTT 클라이언트 팩토리를 생성합니다.
+     *
      * @return MQTT 클라이언트 팩토리
      */
     @Bean
