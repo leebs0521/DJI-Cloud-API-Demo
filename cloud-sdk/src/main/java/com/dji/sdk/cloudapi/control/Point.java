@@ -1,5 +1,7 @@
 package com.dji.sdk.cloudapi.control;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -14,31 +16,22 @@ import javax.validation.constraints.NotNull;
  * @version 1.3
  * @date 2023/2/14
  */
+@Schema(description = "3차원 좌표점")
 public class Point {
 
-    /**
-     * 위도 (필수)
-     * -90 ~ 90 범위, 남위는 음수, 북위는 양수
-     */
+    @Schema(description = "위도 (-90 ~ 90, 남위는 음수, 북위는 양수)")
     @Min(-90)
     @Max(90)
     @NotNull
     private Float latitude;
 
-    /**
-     * 경도 (필수)
-     * -180 ~ 180 범위, 서경은 음수, 동경은 양수
-     */
+    @Schema(description = "경도 (-180 ~ 180, 서경은 음수, 동경은 양수)")
     @NotNull
     @Min(-180)
     @Max(180)
     private Float longitude;
 
-    /**
-     * 고도 (필수)
-     * WGS84 기준 고도, 2 ~ 10000 범위 (미터)
-     * M30 시리즈는 타원체 고도를 사용합니다.
-     */
+    @Schema(description = "고도 (WGS84 기준, 2 ~ 10000 미터)")
     @NotNull
     @Min(2)
     @Max(10000)

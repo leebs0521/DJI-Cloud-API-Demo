@@ -1,6 +1,7 @@
 package com.dji.sample.control.model.param;
 
 import com.dji.sample.component.redis.RedisConst;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +21,7 @@ import javax.validation.constraints.NotBlank;
  * @version 1.3
  * @date 2023/1/11
  */
+@Schema(description = "DRC 모드 파라미터")
 @Data
 @Builder
 @NoArgsConstructor
@@ -27,19 +29,23 @@ import javax.validation.constraints.NotBlank;
 public class DrcModeParam {
 
     /** 클라이언트 ID */
+    @Schema(description = "클라이언트 ID")
     @NotBlank
     private String clientId;
 
     /** 도크 시리얼 번호 */
+    @Schema(description = "도크 시리얼 번호")
     @NotBlank
     private String dockSn;
 
     /** 만료 시간 (초, 1800-86400초, 기본값: DRC_MODE_ALIVE_SECOND) */
+    @Schema(description = "만료 시간 (초)")
     @Range(min = 1800, max = 86400)
     @Builder.Default
     private long expireSec = RedisConst.DRC_MODE_ALIVE_SECOND;
 
     /** 디바이스 DRC 정보 */
+    @Schema(description = "디바이스 DRC 정보")
     @Valid
     @Builder.Default
     private DeviceDrcInfoParam deviceInfo = new DeviceDrcInfoParam();

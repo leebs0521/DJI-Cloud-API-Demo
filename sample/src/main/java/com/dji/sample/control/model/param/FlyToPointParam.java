@@ -1,6 +1,7 @@
 package com.dji.sample.control.model.param;
 
 import com.dji.sdk.cloudapi.control.Point;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,20 +25,18 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "특정 지점으로 비행하는 파라미터")
 public class FlyToPointParam {
 
-    /** 비행 작업 ID */
+    @Schema(description = "비행 작업 ID")
     private String flyToId;
 
-    /** 최대 속도 (1-15 m/s) */
+    @Schema(description = "최대 비행 속도 (1-15 m/s)")
     @Range(min = 1, max = 15)
     @NotNull
     private Integer maxSpeed;
 
-    /**
-     * 비행 지점 목록
-     * M30 시리즈는 하나의 지점만 지원합니다.
-     */
+    @Schema(description = "비행 지점 목록 (M30 시리즈는 하나의 지점만 지원)")
     @Size(min = 1)
     @NotNull
     private List<@Valid Point> points;

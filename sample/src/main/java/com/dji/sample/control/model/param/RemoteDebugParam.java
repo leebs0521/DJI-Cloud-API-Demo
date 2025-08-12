@@ -1,7 +1,7 @@
 package com.dji.sample.control.model.param;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
 import javax.validation.constraints.NotNull;
 
 /**
@@ -15,10 +15,10 @@ import javax.validation.constraints.NotNull;
  * @date 2022/11/14
  */
 @Data
+@Schema(description = "원격 디버깅 파라미터")
 public class RemoteDebugParam {
 
-    /** 디버깅 액션 */
+    @Schema(description = "디버깅 액션 코드")
     @NotNull
     private Integer action;
-
 }

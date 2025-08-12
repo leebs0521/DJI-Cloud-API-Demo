@@ -1,5 +1,6 @@
 package com.dji.sample.control.model.param;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
@@ -13,14 +14,17 @@ import org.hibernate.validator.constraints.Range;
  * @version 1.3
  * @date 2023/2/2
  */
+@Schema(description = "디바이스 DRC 정보 파라미터")
 @Data
 public class DeviceDrcInfoParam {
 
     /** OSD 주파수 (1-30Hz, 기본값: 10Hz) */
+    @Schema(description = "OSD 주파수 (1-30Hz)")
     @Range(min = 1, max = 30)
     private Integer osdFrequency = 10;
 
     /** HSI 주파수 (1-30Hz, 기본값: 1Hz) */
+    @Schema(description = "HSI 주파수 (1-30Hz)")
     @Range(min = 1, max = 30)
     private Integer hsiFrequency = 1;
 }
