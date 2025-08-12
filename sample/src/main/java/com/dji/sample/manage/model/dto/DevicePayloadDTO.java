@@ -1,7 +1,7 @@
 package com.dji.sample.manage.model.dto;
-
 import com.dji.sdk.cloudapi.device.ControlSourceEnum;
 import com.dji.sdk.cloudapi.device.PayloadIndex;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,45 +41,51 @@ import lombok.NoArgsConstructor;
  * @date 2021/11/19
  * @version 0.1
  */
+@Schema(description = "디바이스 페이로드 정보 전송 객체")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class DevicePayloadDTO {
-
     /**
      * 페이로드 시리얼 번호
      * 페이로드 장치를 고유하게 식별하는 시리얼 번호
      */
+    @Schema(description = "페이로드 장치를 고유하게 식별하는 시리얼 번호")
     private String payloadSn;
 
     /**
      * 페이로드 이름
      * 페이로드 장치의 표시 이름
      */
+    @Schema(description = "페이로드 장치의 표시 이름")
     private String payloadName;
 
     /**
      * 페이로드 인덱스
      * 페이로드 장치의 순서 또는 위치 인덱스
      */
+    @Schema(description = "페이로드 장치의 순서 또는 위치 인덱스")
     private Integer index;
 
     /**
      * 페이로드 설명
      * 페이로드 장치에 대한 추가 설명 정보
      */
+    @Schema(description = "페이로드 장치에 대한 추가 설명 정보")
     private String payloadDesc;
 
     /**
      * 제어 소스
      * 페이로드 제어 권한의 출처 (예: PILOT, DOCK 등)
      */
+    @Schema(description = "페이로드 제어 권한의 출처 (예: PILOT, DOCK 등)", enumAsRef = true)
     private ControlSourceEnum controlSource;
 
     /**
      * 페이로드 인덱스 정보
      * 페이로드 장치의 상세 인덱스 정보
      */
+    @Schema(description = "페이로드 장치의 상세 인덱스 정보")
     private PayloadIndex payloadIndex;
 }

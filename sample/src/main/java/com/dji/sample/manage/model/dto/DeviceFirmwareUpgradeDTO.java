@@ -1,5 +1,6 @@
 package com.dji.sample.manage.model.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -37,29 +38,34 @@ import lombok.Data;
  * @date 2022/8/16
  */
 @Data
+@Schema(description = "디바이스 펌웨어 업그레이드 정보")
 public class DeviceFirmwareUpgradeDTO {
 
     /**
      * 디바이스 이름
      * 펌웨어를 업그레이드할 디바이스의 모델명
      */
+    @Schema(description = "펌웨어를 업그레이드할 디바이스의 모델명")
     private String deviceName;
 
     /**
      * 디바이스 시리얼 번호
      * 펌웨어를 업그레이드할 디바이스의 시리얼 번호
      */
+    @Schema(description = "펌웨어를 업그레이드할 디바이스의 시리얼 번호")
     private String sn;
 
     /**
      * 제품 버전
      * 업그레이드할 펌웨어의 제품 버전 정보
      */
+    @Schema(description = "업그레이드할 펌웨어의 제품 버전 정보")
     private String productVersion;
 
     /**
      * 펌웨어 업그레이드 타입
      * 펌웨어 업그레이드의 타입 (예: 0-자동, 1-수동, 2-강제 등)
      */
+    @Schema(description = "펌웨어 업그레이드의 타입 (0-자동, 1-수동, 2-강제 등)")
     private Integer firmwareUpgradeType;
 }

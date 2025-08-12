@@ -8,6 +8,9 @@ import com.dji.sdk.common.PaginationData;
 import com.dji.sdk.exception.CloudSDKErrorEnum;
 import com.dji.sdk.mqtt.property.PropertySetReplyResultEnum;
 import com.fasterxml.jackson.databind.JsonNode;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -46,11 +49,11 @@ import java.util.Optional;
  * @version 0.1
  * @date 2021/11/15
  */
+@Tag(name = "디바이스 관리", description = "디바이스 관리 API")
 @RestController
 @Slf4j
 @RequestMapping("${url.manage.prefix}${url.manage.version}/devices")
 public class DeviceController {
-
     /** 디바이스 서비스 - 디바이스 관리 비즈니스 로직 */
     @Autowired
     private IDeviceService deviceService;
@@ -65,14 +68,18 @@ public class DeviceController {
      * @param workspaceId 워크스페이스 ID
      * @return 디바이스 토폴로지 목록 (성공 시) 또는 오류 응답
      */
+    @Operation(summary = "워크스페이스의 디바이스 토폴로지 조회", 
+        description = "워크스페이스에 속한 모든 온라인 디바이스의 토폴로지 정보를 조회합니다.")
     @GetMapping("/{workspace_id}/devices")
-    public HttpResultResponse<List<DeviceDTO>> getDevices(@PathVariable("workspace_id") String workspaceId) {
+    public HttpResultResponse<List<DeviceDTO>> getDevices(
+        @Parameter(description = "워크스페이스 ID") @PathVariable("workspace_id") String workspaceId
+    ) {
         List<DeviceDTO> devicesList = deviceService.getDevicesTopoForWeb(workspaceId);
-
         return HttpResultResponse.success(devicesList);
     }
 
-    /**
+    /*
+    *
      * 디바이스를 워크스페이스에 바인딩합니다.
      * 
      * 디바이스를 워크스페이스에 바인딩하면 해당 워크스페이스에서만
@@ -83,8 +90,13 @@ public class DeviceController {
      * @param deviceSn 디바이스 시리얼 번호
      * @return 바인딩 성공 여부 (성공 시) 또는 오류 응답
      */
+    @Operation(summary = "디바이스 바인딩", 
+        description = "디바이스를 워크스페이스에 바인딩합니다.")
     @PostMapping("/{device_sn}/binding")
-    public HttpResultResponse bindDevice(@RequestBody DeviceDTO device, @PathVariable("device_sn") String deviceSn) {
+    public HttpResultResponse bindDevice(
+        @Parameter(description = "디바이스 정보") @RequestBody DeviceDTO device,
+        @Parameter(description = "디바이스 시리얼 번호") @PathVariable("device_sn") String deviceSn
+    ) {
         device.setDeviceSn(deviceSn);
         boolean isUpd = deviceService.bindDevice(device);
         return isUpd ? HttpResultResponse.success() : HttpResultResponse.error();
@@ -100,11 +112,17 @@ public class DeviceController {
      * @param deviceSn 디바이스 시리얼 번호
      * @return 디바이스 정보 (성공 시) 또는 오류 응답
      */
+    @Operation(summary = "디바이스 상세 정보 조회",
+        description = "시리얼 번호로 디바이스의 상세 정보를 조회합니다.")
     @GetMapping("/{workspace_id}/devices/{device_sn}")
-    public HttpResultResponse getDevice(@PathVariable("workspace_id") String workspaceId,
-                                        @PathVariable("device_sn") String deviceSn) {
+    public HttpResultResponse getDevice(
+        @Parameter(description = "워크스페이스 ID") @PathVariable("workspace_id") String workspaceId,
+        @Parameter(description = "디바이스 시리얼 번호") @PathVariable("device_sn") String deviceSn
+    ) {
         Optional<DeviceDTO> deviceOpt = deviceService.getDeviceBySn(deviceSn);
-        return deviceOpt.isEmpty() ? HttpResultResponse.error("device not found.") : HttpResultResponse.success(deviceOpt.get());
+        return deviceOpt.isEmpty()
+                ? HttpResultResponse.error("device not found.")
+                : HttpResultResponse.success(deviceOpt.get());
     }
 
     /**
@@ -119,13 +137,16 @@ public class DeviceController {
      * @param pageSize 페이지당 항목 수 (기본값: 50)
      * @return 바인딩된 디바이스 목록 (페이지네이션 포함)
      */
+    @Operation(summary = "바인딩된 디바이스 목록 조회",
+        description = "워크스페이스에 바인딩된 디바이스 목록을 페이지 단위로 조회합니다.")
     @GetMapping("/{workspace_id}/devices/bound")
     public HttpResultResponse<PaginationData<DeviceDTO>> getBoundDevicesWithDomain(
-            @PathVariable("workspace_id") String workspaceId, Integer domain,
-            @RequestParam(defaultValue = "1") Long page,
-            @RequestParam(value = "page_size", defaultValue = "50") Long pageSize) {
+        @Parameter(description = "워크스페이스 ID") @PathVariable("workspace_id") String workspaceId,
+        @Parameter(description = "도메인 필터") Integer domain,
+        @Parameter(description = "페이지 번호") @RequestParam(defaultValue = "1") Long page,
+        @Parameter(description = "페이지 크기") @RequestParam(value = "page_size", defaultValue = "50") Long pageSize
+    ) {
         PaginationData<DeviceDTO> devices = deviceService.getBoundDevicesWithDomain(workspaceId, page, pageSize, domain);
-
         return HttpResultResponse.success(devices);
     }
 
@@ -138,8 +159,12 @@ public class DeviceController {
      * @param deviceSn 디바이스 시리얼 번호
      * @return 바인딩 해제 성공 여부
      */
+    @Operation(summary = "디바이스 바인딩 해제",
+        description = "디바이스의 워크스페이스 바인딩을 해제합니다.")
     @DeleteMapping("/{device_sn}/unbinding")
-    public HttpResultResponse unbindingDevice(@PathVariable("device_sn") String deviceSn) {
+    public HttpResultResponse unbindingDevice(
+        @Parameter(description = "디바이스 시리얼 번호") @PathVariable("device_sn") String deviceSn
+    ) {
         deviceService.unbindDevice(deviceSn);
         return HttpResultResponse.success();
     }
@@ -155,10 +180,14 @@ public class DeviceController {
      * @param deviceSn 디바이스 시리얼 번호
      * @return 업데이트 성공 여부
      */
+    @Operation(summary = "디바이스 정보 업데이트",
+        description = "디바이스의 메타데이터 정보를 수정합니다.")
     @PutMapping("/{workspace_id}/devices/{device_sn}")
-    public HttpResultResponse updateDevice(@RequestBody DeviceDTO device,
-                                           @PathVariable("workspace_id") String workspaceId,
-                                           @PathVariable("device_sn") String deviceSn) {
+    public HttpResultResponse updateDevice(
+        @Parameter(description = "디바이스 정보") @RequestBody DeviceDTO device,
+        @Parameter(description = "워크스페이스 ID") @PathVariable("workspace_id") String workspaceId,
+        @Parameter(description = "디바이스 시리얼 번호") @PathVariable("device_sn") String deviceSn
+    ) {
         device.setDeviceSn(deviceSn);
         boolean isUpd = deviceService.updateDevice(device);
         return isUpd ? HttpResultResponse.success() : HttpResultResponse.error();
@@ -174,9 +203,13 @@ public class DeviceController {
      * @param upgradeDTOS 펌웨어 업그레이드 정보 목록
      * @return 업그레이드 작업 생성 결과
      */
+    @Operation(summary = "펌웨어 업그레이드 작업 생성",
+        description = "디바이스의 OTA 펌웨어 업그레이드 작업을 생성합니다.")
     @PostMapping("/{workspace_id}/devices/ota")
-    public HttpResultResponse createOtaJob(@PathVariable("workspace_id") String workspaceId,
-                                           @RequestBody List<DeviceFirmwareUpgradeDTO> upgradeDTOS) {
+    public HttpResultResponse createOtaJob(
+        @Parameter(description = "워크스페이스 ID") @PathVariable("workspace_id") String workspaceId,
+        @Parameter(description = "펌웨어 업그레이드 정보 목록") @RequestBody List<DeviceFirmwareUpgradeDTO> upgradeDTOS
+    ) {
         return deviceService.createDeviceOtaJob(workspaceId, upgradeDTOS);
     }
 
@@ -191,16 +224,20 @@ public class DeviceController {
      * @param param 설정할 속성 파라미터 (JSON 형태)
      * @return 속성 설정 성공 여부
      */
+    @Operation(summary = "디바이스 속성 설정",
+        description = "드론의 속성 파라미터를 설정합니다.")
     @PutMapping("/{workspace_id}/devices/{device_sn}/property")
-    public HttpResultResponse devicePropertySet(@PathVariable("workspace_id") String workspaceId,
-                                                @PathVariable("device_sn") String dockSn,
-                                                @RequestBody JsonNode param) {
+    public HttpResultResponse devicePropertySet(
+        @Parameter(description = "워크스페이스 ID") @PathVariable("workspace_id") String workspaceId,
+        @Parameter(description = "도크 시리얼 번호") @PathVariable("device_sn") String dockSn,
+        @Parameter(description = "설정할 속성 파라미터") @RequestBody JsonNode param
+    ) {
         if (param.size() != 1) {
             return HttpResultResponse.error(CloudSDKErrorEnum.INVALID_PARAMETER);
         }
-
         int result = deviceService.devicePropertySet(workspaceId, dockSn, param);
-        return PropertySetReplyResultEnum.SUCCESS.getResult() == result ?
-                HttpResultResponse.success() : HttpResultResponse.error(result, String.valueOf(result));
+        return PropertySetReplyResultEnum.SUCCESS.getResult() == result
+                ? HttpResultResponse.success()
+                : HttpResultResponse.error(result, String.valueOf(result));
     }
 }

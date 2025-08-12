@@ -4,7 +4,7 @@ import com.dji.sdk.exception.CloudSDKErrorEnum;
 import com.dji.sdk.exception.CloudSDKException;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.Objects;
@@ -20,24 +20,28 @@ import java.util.Objects;
  * @version 1.7
  * @date 2023/6/29
  */
+@Schema(name = "PayloadIndex", description = "페이로드 인덱스 정보")
 public class PayloadIndex {
 
     /**
      * 페이로드 타입 (카메라, 센서 등)
      */
     @NotNull
+    @Schema(name = "type", description = "페이로드 타입 (카메라, 센서 등)")
     private DeviceTypeEnum type;
 
     /**
      * 페이로드 서브타입 (모델별 세부 구분)
      */
     @NotNull
+    @Schema(name = "subType", description = "페이로드 서브타입 (모델별 세부 구분)")
     private DeviceSubTypeEnum subType;
 
     /**
      * 페이로드 위치 (드론 내 장착 위치)
      */
     @NotNull
+    @Schema(name = "position", description = "페이로드 위치 (드론 내 장착 위치)")
     private PayloadPositionEnum position;
 
     /**
