@@ -37,7 +37,7 @@ public enum PropertySetEnum {
      * 도크의 야간 조명 기능을 제어합니다.
      * 지원 디바이스: DOCK, DOCK2
      */
-    NIGHT_LIGHTS_STATE("night_lights_state", NightLightsStateSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2_OR_DOCK3)),
+    NIGHT_LIGHTS_STATE("night_lights_state", NightLightsStateSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2)),
 
     /**
      * 고도 제한 설정
@@ -45,7 +45,7 @@ public enum PropertySetEnum {
      * 드론의 최대 비행 고도를 제한합니다.
      * 지원 디바이스: DOCK, DOCK2
      */
-    HEIGHT_LIMIT("height_limit", HeightLimitSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2_OR_DOCK3)),
+    HEIGHT_LIMIT("height_limit", HeightLimitSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2)),
 
     /**
      * 거리 제한 상태 설정
@@ -53,7 +53,7 @@ public enum PropertySetEnum {
      * 드론의 비행 거리 제한을 제어합니다.
      * 지원 디바이스: DOCK, DOCK2
      */
-    DISTANCE_LIMIT_STATUS("distance_limit_status", DistanceLimitStatusSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2_OR_DOCK3)),
+    DISTANCE_LIMIT_STATUS("distance_limit_status", DistanceLimitStatusSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2)),
 
     /**
      * 장애물 회피 설정
@@ -61,7 +61,7 @@ public enum PropertySetEnum {
      * 드론의 장애물 회피 기능을 제어합니다.
      * 지원 디바이스: DOCK, DOCK2
      */
-    OBSTACLE_AVOIDANCE("obstacle_avoidance", ObstacleAvoidanceSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2_OR_DOCK3)),
+    OBSTACLE_AVOIDANCE("obstacle_avoidance", ObstacleAvoidanceSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2)),
 
     /**
      * RTH 고도 설정
@@ -69,7 +69,7 @@ public enum PropertySetEnum {
      * 드론의 Return-to-Home 고도를 설정합니다.
      * 지원 디바이스: DOCK, DOCK2
      */
-    RTH_ALTITUDE("rth_altitude", RthAltitudeSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2_OR_DOCK3)),
+    RTH_ALTITUDE("rth_altitude", RthAltitudeSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2)),
 
     /**
      * RC 연결 끊김 시 동작 설정
@@ -77,7 +77,7 @@ public enum PropertySetEnum {
      * RC 연결이 끊어졌을 때 드론의 동작을 설정합니다.
      * 지원 디바이스: DOCK, DOCK2
      */
-    OUT_OF_CONTROL_ACTION("rc_lost_action", RcLostActionSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2_OR_DOCK3)),
+    OUT_OF_CONTROL_ACTION("rc_lost_action", RcLostActionSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2)),
 
     /**
      * RC 연결 끊김 시 웨이라인 종료 설정
@@ -85,7 +85,7 @@ public enum PropertySetEnum {
      * RC 연결이 끊어졌을 때 웨이라인 비행을 종료할지 설정합니다.
      * 지원 디바이스: DOCK, DOCK2
      */
-    EXIT_WAYLINE_WHEN_RC_LOST("exit_wayline_when_rc_lost", ExitWaylineWhenRcLostSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2_OR_DOCK3), true),
+    EXIT_WAYLINE_WHEN_RC_LOST("exit_wayline_when_rc_lost", ExitWaylineWhenRcLostSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2), true),
 
     /**
      * 열화상 카메라 팔레트 스타일 설정
@@ -93,7 +93,7 @@ public enum PropertySetEnum {
      * 열화상 카메라의 색상 팔레트 스타일을 설정합니다.
      * 지원 디바이스: DOCK, DOCK2
      */
-    THERMAL_CURRENT_PALETTE_STYLE("thermal_current_palette_style", ThermalCurrentPaletteStyleSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2_OR_DOCK3)),
+    THERMAL_CURRENT_PALETTE_STYLE("thermal_current_palette_style", ThermalCurrentPaletteStyleSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2)),
 
     /**
      * 열화상 카메라 게인 모드 설정
@@ -101,7 +101,7 @@ public enum PropertySetEnum {
      * 열화상 카메라의 게인 모드를 설정합니다.
      * 지원 디바이스: DOCK, DOCK2
      */
-    THERMAL_GAIN_MODE("thermal_gain_mode", ThermalGainModeSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2_OR_DOCK3)),
+    THERMAL_GAIN_MODE("thermal_gain_mode", ThermalGainModeSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2)),
 
     /**
      * 열화상 카메라 등온선 상태 설정
@@ -109,7 +109,7 @@ public enum PropertySetEnum {
      * 열화상 카메라의 등온선 기능 상태를 설정합니다.
      * 지원 디바이스: DOCK, DOCK2
      */
-    THERMAL_ISOTHERM_STATE("thermal_isotherm_state", ThermalIsothermStateSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2_OR_DOCK3)),
+    THERMAL_ISOTHERM_STATE("thermal_isotherm_state", ThermalIsothermStateSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2)),
 
     /**
      * 열화상 카메라 등온선 상한 설정
@@ -117,7 +117,7 @@ public enum PropertySetEnum {
      * 열화상 카메라의 등온선 상한 값을 설정합니다.
      * 지원 디바이스: DOCK, DOCK2
      */
-    THERMAL_ISOTHERM_UPPER_LIMIT("thermal_isotherm_upper_limit", ThermalIsothermUpperLimitSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2_OR_DOCK3)),
+    THERMAL_ISOTHERM_UPPER_LIMIT("thermal_isotherm_upper_limit", ThermalIsothermUpperLimitSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2)),
 
     /**
      * 열화상 카메라 등온선 하한 설정
@@ -125,7 +125,7 @@ public enum PropertySetEnum {
      * 열화상 카메라의 등온선 하한 값을 설정합니다.
      * 지원 디바이스: DOCK, DOCK2
      */
-    THERMAL_ISOTHERM_LOWER_LIMIT("thermal_isotherm_lower_limit", ThermalIsothermLowerLimitSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2_OR_DOCK3)),
+    THERMAL_ISOTHERM_LOWER_LIMIT("thermal_isotherm_lower_limit", ThermalIsothermLowerLimitSet.class, CloudSDKVersionEnum.V0_0_1, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2)),
 
     /**
      * RTH 모드 설정
@@ -133,7 +133,7 @@ public enum PropertySetEnum {
      * 드론의 Return-to-Home 모드를 설정합니다.
      * 지원 디바이스: DOCK2
      */
-    RTH_MODE("rth_mode", DockDroneRthMode.class, CloudSDKVersionEnum.V1_0_0, Set.of(GatewayTypeEnum.DOCK2_OR_DOCK3)),
+    RTH_MODE("rth_mode", DockDroneRthMode.class, CloudSDKVersionEnum.V1_0_0, Set.of(GatewayTypeEnum.DOCK2)),
 
     /**
      * 사용자 경험 개선 설정
@@ -141,7 +141,7 @@ public enum PropertySetEnum {
      * 사용자 경험을 개선하기 위한 설정을 제어합니다.
      * 지원 디바이스: DOCK, DOCK2
      */
-    USER_EXPERIENCE_IMPROVEMENT("user_experience_improvement", UserExperienceImprovementSet.class, CloudSDKVersionEnum.V1_0_0, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2_OR_DOCK3)),
+    USER_EXPERIENCE_IMPROVEMENT("user_experience_improvement", UserExperienceImprovementSet.class, CloudSDKVersionEnum.V1_0_0, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2)),
 
     /**
      * 커맨더 모드 연결 끊김 동작 설정
@@ -149,7 +149,7 @@ public enum PropertySetEnum {
      * 커맨더 모드에서 연결이 끊어졌을 때의 동작을 설정합니다.
      * 지원 디바이스: DOCK, DOCK2
      */
-    COMMANDER_MODE_LOST_ACTION("commander_mode_lost_action", DockDroneCommanderModeLostAction.class, CloudSDKVersionEnum.V1_0_0, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2_OR_DOCK3)),
+    COMMANDER_MODE_LOST_ACTION("commander_mode_lost_action", DockDroneCommanderModeLostAction.class, CloudSDKVersionEnum.V1_0_0, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2)),
 
     /**
      * 커맨더 비행 고도 설정
@@ -157,7 +157,7 @@ public enum PropertySetEnum {
      * 커맨더 모드에서의 비행 고도를 설정합니다.
      * 지원 디바이스: DOCK, DOCK2
      */
-    COMMANDER_FLIGHT_HEIGHT("commander_flight_height", DockDroneCommanderFlightHeight.class, CloudSDKVersionEnum.V1_0_0, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2_OR_DOCK3)),
+    COMMANDER_FLIGHT_HEIGHT("commander_flight_height", DockDroneCommanderFlightHeight.class, CloudSDKVersionEnum.V1_0_0, Set.of(GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2)),
 
     /**
      * 오프라인 맵 활성화 설정
@@ -165,7 +165,7 @@ public enum PropertySetEnum {
      * 오프라인 맵 기능의 활성화 여부를 설정합니다.
      * 지원 디바이스: DOCK2
      */
-    OFFLINE_MAP_ENABLE("offline_map_enable", DockDroneOfflineMapEnable.class, CloudSDKVersionEnum.V1_0_1, Set.of(GatewayTypeEnum.DOCK2_OR_DOCK3)),
+    OFFLINE_MAP_ENABLE("offline_map_enable", DockDroneOfflineMapEnable.class, CloudSDKVersionEnum.V1_0_1, Set.of(GatewayTypeEnum.DOCK2)),
 
     /**
      * 무음 모드 설정

@@ -27,13 +27,13 @@ public enum OsdDeviceTypeEnum {
     RC(true, OsdRemoteControl.class, ChannelName.INBOUND_OSD_RC, GatewayTypeEnum.RC),
 
     /** 도크 (게이트웨이) */
-    DOCK(true, OsdDock.class, ChannelName.INBOUND_OSD_DOCK, GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2_OR_DOCK3),
+    DOCK(true, OsdDock.class, ChannelName.INBOUND_OSD_DOCK, GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2, GatewayTypeEnum.DOCK3),
 
     /** 리모컨 드론 (서브 디바이스) */
     RC_DRONE(false, OsdRcDrone.class, ChannelName.INBOUND_OSD_RC_DRONE, GatewayTypeEnum.RC),
 
     /** 도크 드론 (서브 디바이스) */
-    DOCK_DRONE(false, OsdDockDrone.class, ChannelName.INBOUND_OSD_DOCK_DRONE, GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2_OR_DOCK3);
+    DOCK_DRONE(false, OsdDockDrone.class, ChannelName.INBOUND_OSD_DOCK_DRONE, GatewayTypeEnum.DOCK, GatewayTypeEnum.DOCK2, GatewayTypeEnum.DOCK3);
 
     /** 게이트웨이 여부 */
     private final boolean gateway;

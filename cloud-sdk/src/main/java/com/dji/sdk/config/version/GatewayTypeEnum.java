@@ -40,11 +40,18 @@ public enum GatewayTypeEnum {
     DOCK(DeviceEnum.DOCK),
 
     /**
-     * 도크2 또는 3 게이트웨이
+     * 도크2 게이트웨이
      * <p>
      * DOCK2 디바이스를 포함합니다.
      */
-    DOCK2_OR_DOCK3(DeviceEnum.DOCK2_OR_DOCK3),
+    DOCK2(DeviceEnum.DOCK2),
+
+    /**
+     * 도크3 게이트웨이
+     * <p>
+     * DOCK2 디바이스를 포함합니다.
+     */
+    DOCK3(DeviceEnum.DOCK3),
 
     ;
     /**

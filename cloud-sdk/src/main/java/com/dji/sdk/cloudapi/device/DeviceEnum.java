@@ -120,8 +120,10 @@ public enum DeviceEnum {
      */
     /** 도크 */
     DOCK(DeviceDomainEnum.DOCK, DeviceTypeEnum.DOCK, DeviceSubTypeEnum.ZERO),
-    /** 도크2 또는 3 */
-    DOCK2_OR_DOCK3(DeviceDomainEnum.DOCK, DeviceTypeEnum.DOCK2_OR_DOCK3, DeviceSubTypeEnum.ZERO),
+    /** 도크2 */
+    DOCK2(DeviceDomainEnum.DOCK, DeviceTypeEnum.DOCK2, DeviceSubTypeEnum.ZERO),
+    /** 도크2 */
+    DOCK3(DeviceDomainEnum.DOCK, DeviceTypeEnum.DOCK3, DeviceSubTypeEnum.ZERO),
     ;
     /**
      * 디바이스 도메인 (DRONE, PAYLOAD, REMOTER_CONTROL, DOCK)

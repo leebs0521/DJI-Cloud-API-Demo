@@ -49,7 +49,8 @@ public class GatewayThingVersion {
             case DOCK:
                 this.thingVersion = DockThingVersionEnum.find(thingVersion);
                 return;
-            case DOCK2_OR_DOCK3:
+            case DOCK2:
+            case DOCK3:
                 this.thingVersion = Dock2ThingVersionEnum.find(thingVersion);
                 return;
             case RC:
