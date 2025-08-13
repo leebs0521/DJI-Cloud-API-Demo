@@ -1,5 +1,6 @@
 package com.dji.sample.map.model.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -45,6 +46,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "디바이스 데이터 상태 전송 객체")
 public class DeviceDataStatusDTO {
 
     /**
@@ -53,6 +55,7 @@ public class DeviceDataStatusDTO {
      * DJI 디바이스의 고유 식별자로 사용되는 시리얼 번호입니다.
      * 이 값은 디바이스 식별 및 API 호출 시 필수적으로 사용됩니다.
      */
+    @Schema(description = "DJI 디바이스의 고유 식별자")
     private String deviceSn;
 
     /**
@@ -61,6 +64,7 @@ public class DeviceDataStatusDTO {
      * 사용자가 설정한 디바이스의 별칭입니다.
      * 디바이스 식별을 위한 사용자 친화적인 이름으로 사용됩니다.
      */
+    @Schema(description = "디바이스 식별을 위한 사용자 친화적인 별칭")
     private String nickname;
 
     /**
@@ -69,6 +73,7 @@ public class DeviceDataStatusDTO {
      * 디바이스의 공식 모델명 또는 제품명입니다.
      * 예: M30, M300 RTK, Dock 등
      */
+    @Schema(description = "디바이스의 공식 모델명 또는 제품명")
     private String deviceName;
 
     /**
@@ -78,6 +83,7 @@ public class DeviceDataStatusDTO {
      * true: 온라인 (연결됨)
      * false: 오프라인 (연결되지 않음)
      */
+    @Schema(description = "디바이스의 현재 연결 상태")
     private Boolean online;
 
     /**
@@ -86,5 +92,6 @@ public class DeviceDataStatusDTO {
      * 해당 디바이스와 관련된 비행 영역의 상태 정보를 포함합니다.
      * 비행 영역 할당, 동기화 상태, 권한 정보 등을 포함할 수 있습니다.
      */
+    @Schema(description = "디바이스와 관련된 비행 영역의 상태 정보")
     private DeviceFlightAreaDTO flightAreaStatus;
 }

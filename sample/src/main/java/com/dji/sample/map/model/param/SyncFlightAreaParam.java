@@ -1,6 +1,7 @@
 package com.dji.sample.map.model.param;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -39,6 +40,7 @@ import java.util.List;
  * @date 2023/11/22
  */
 @Data
+@Schema(description = "비행 영역 동기화 요청 본문 모델. 디바이스 시리얼 번호 목록을 포함합니다.")
 public class SyncFlightAreaParam {
 
     /**
@@ -57,8 +59,8 @@ public class SyncFlightAreaParam {
      * - 단일 디바이스: ["device_sn_001"]
      * - 다중 디바이스: ["device_sn_001", "device_sn_002", "device_sn_003"]
      */
+    @Schema(description = "비행 영역을 동기화할 디바이스의 시리얼 번호 목록")
     @NotNull
     @JsonProperty("device_sn")
     private List<String> deviceSns;
-
 }

@@ -2,6 +2,7 @@ package com.dji.sample.map.model.dto;
 
 import com.dji.sdk.cloudapi.flightarea.FlightAreaSyncReasonEnum;
 import com.dji.sdk.cloudapi.flightarea.FlightAreaSyncStatusEnum;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -48,6 +49,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "디바이스 비행 영역 전송 객체")
 public class DeviceFlightAreaDTO {
 
     /**
@@ -56,6 +58,7 @@ public class DeviceFlightAreaDTO {
      * 비행 영역이 할당된 디바이스의 고유 식별자입니다.
      * 이 값은 디바이스와 비행 영역 간의 관계를 식별하는 데 사용됩니다.
      */
+    @Schema(description = "디바이스 시리얼 번호")
     private String deviceSn;
 
     /**
@@ -64,6 +67,7 @@ public class DeviceFlightAreaDTO {
      * 비행 영역이 속한 워크스페이스의 고유 식별자입니다.
      * 워크스페이스별로 비행 영역을 관리할 수 있습니다.
      */
+    @Schema(description = "워크스페이스 ID")
     private String workspaceId;
 
     /**
@@ -72,6 +76,7 @@ public class DeviceFlightAreaDTO {
      * 디바이스에 할당된 비행 영역 파일의 고유 식별자입니다.
      * 이 파일에는 비행 영역의 상세 정보가 포함되어 있습니다.
      */
+    @Schema(description = "비행 영역 파일 ID")
     private String fileId;
 
     /**
@@ -80,6 +85,7 @@ public class DeviceFlightAreaDTO {
      * 디바이스와 비행 영역 간의 동기화 진행 상태를 나타냅니다.
      * 예: SUCCESS, FAILED, SYNCING, NOT_SYNC 등
      */
+    @Schema(description = "비행 영역 동기화 상태")
     private FlightAreaSyncStatusEnum syncStatus;
 
     /**
@@ -88,6 +94,7 @@ public class DeviceFlightAreaDTO {
      * 동기화가 실패한 경우 그 원인을 나타내는 코드입니다.
      * 예: FILE_NOT_FOUND, DEVICE_OFFLINE, INVALID_FORMAT 등
      */
+    @Schema(description = "비행 영역 동기화 실패 이유")
     private FlightAreaSyncReasonEnum syncCode;
 
     /**
@@ -96,5 +103,6 @@ public class DeviceFlightAreaDTO {
      * 동기화 상태에 대한 상세한 설명 메시지입니다.
      * 사용자에게 동기화 결과를 알려주는 데 사용됩니다.
      */
+    @Schema(description = "비행 영역 동기화 메시지")
     private String syncMsg;
 }

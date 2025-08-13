@@ -22,7 +22,7 @@ import javax.validation.constraints.Pattern;
  * @version 1.7
  * @date 2023/6/16
  */
-@Schema(description = "Create element response data")
+@Schema(description = "지도 요소 생성 응답 데이터")
 public class CreateMapElementResponse {
 
     /**
@@ -34,7 +34,7 @@ public class CreateMapElementResponse {
      */
     @NotNull
     @Pattern(regexp = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
-    @Schema(description = "element id", format = "uuid")
+    @Schema(description = "요소 ID", format = "uuid")
     private String id;
 
     public CreateMapElementResponse() {

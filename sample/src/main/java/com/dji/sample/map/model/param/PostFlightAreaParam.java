@@ -1,9 +1,8 @@
 package com.dji.sample.map.model.param;
-
 import com.dji.sample.map.model.dto.FlightAreaContent;
 import com.dji.sdk.cloudapi.flightarea.GeofenceTypeEnum;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -43,8 +42,8 @@ import javax.validation.constraints.NotNull;
  * @date 2023/11/22
  */
 @Data
+@Schema(description = "비행 영역 생성 요청 파라미터")
 public class PostFlightAreaParam {
-
     /**
      * 비행 영역 ID
      * 
@@ -55,6 +54,7 @@ public class PostFlightAreaParam {
      * - @NotNull: null 값이 허용되지 않음
      */
     @NotNull
+    @Schema(description = "비행 영역의 고유 식별자")
     private String id;
 
     /**
@@ -67,6 +67,7 @@ public class PostFlightAreaParam {
      * - @NotNull: null 값이 허용되지 않음
      */
     @NotNull
+    @Schema(description = "비행 영역의 사용자 친화적인 이름")
     private String name;
 
     /**
@@ -79,6 +80,7 @@ public class PostFlightAreaParam {
      * - @NotNull: null 값이 허용되지 않음
      */
     @NotNull
+    @Schema(description = "비행 영역의 분류 타입 (DFENCE: 동적 펜스, NFZ: 비행 금지 구역)")
     private GeofenceTypeEnum type;
 
     /**
@@ -93,5 +95,6 @@ public class PostFlightAreaParam {
      */
     @NotNull
     @Valid
+    @Schema(description = "비행 영역의 속성과 기하학적 정보를 포함하는 상세 내용")
     private FlightAreaContent content;
 }

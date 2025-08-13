@@ -1,6 +1,7 @@
 package com.dji.sample.map.model.param;
 
 import com.dji.sample.map.model.dto.FlightAreaContent;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -37,6 +38,7 @@ import lombok.Data;
  * @date 2023/11/22
  */
 @Data
+@Schema(description = "비행 영역 수정 요청 본문 모델. 모든 필드는 선택이며 null은 미수정을 의미합니다.")
 public class PutFlightAreaParam {
 
     /**
@@ -49,6 +51,7 @@ public class PutFlightAreaParam {
      * - null: 이름 수정하지 않음
      * - 문자열: 새로운 이름으로 수정
      */
+    @Schema(description = "수정할 비행 영역의 이름. null이면 기존 이름 유지")
     private String name;
 
     /**
@@ -61,6 +64,7 @@ public class PutFlightAreaParam {
      * - null: 내용 수정하지 않음
      * - FlightAreaContent 객체: 새로운 내용으로 수정
      */
+    @Schema(description = "수정할 비행 영역의 상세 내용(속성/기하 정보). null이면 기존 내용 유지")
     private FlightAreaContent content;
 
     /**
@@ -74,6 +78,6 @@ public class PutFlightAreaParam {
      * - true: 활성화됨 (비행 제한 적용)
      * - false: 비활성화됨 (비행 제한 미적용)
      */
+    @Schema(description = "수정할 활성화 상태. null이면 기존 상태 유지")
     private Boolean status;
-
 }
