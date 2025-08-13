@@ -22,7 +22,7 @@ import java.util.List;
  * @version 0.2
  * @date 2021/12/7
  */
-@Tag(name = "미디어 컨트롤러", description = "미디어 파일 업로드, 조회 ,콜백 처리 등 미디어 관련 API")
+@Tag(name = "[Media] 미디어 관리", description = "미디어 파일 업로드, 조회 ,콜백 처리 등 미디어 관련 API")
 @RequiredArgsConstructor
 @Slf4j
 @RestController

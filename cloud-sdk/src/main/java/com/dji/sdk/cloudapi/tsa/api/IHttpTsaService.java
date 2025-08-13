@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
  * @version 0.2
  * @date 2021/12/8
  */
-@Tag(name = "TSA 인터페이스")
+//@Tag(name = "TSA 인터페이스")
 public interface IHttpTsaService {
 
     /**

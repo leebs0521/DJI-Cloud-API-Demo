@@ -40,7 +40,7 @@ import java.util.List;
  * @version 0.3
  * @date 2021/12/22
  */
-@Tag(name = "웨이라인 인터페이스")
+//@Tag(name = "웨이라인 인터페이스")
 public interface IHttpWaylineService {
 
     /**

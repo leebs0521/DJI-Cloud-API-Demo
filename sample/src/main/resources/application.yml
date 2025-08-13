@@ -175,3 +175,9 @@ cloud-api:
 #    # Webrtc: Only supports using whip standard
 #    whip:
 #      url: Please enter the rtmp access address. #  Example：http://192.168.1.1:1985/rtc/v1/whip/?app=live&stream=
+
+# Swagger
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: method

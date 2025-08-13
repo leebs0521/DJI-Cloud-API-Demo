@@ -33,7 +33,7 @@ import javax.validation.Valid;
  * version: 0.2
  * date: 2021/12/9
  */
-@Tag(name = "미디어 인터페이스")
+//@Tag(name = "미디어 인터페이스")
 public interface IHttpMediaService {
 
     String PREFIX = "media/api/v1";

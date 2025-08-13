@@ -18,7 +18,7 @@ import java.util.List;
  * 디바이스 데이터 관리 컨트롤러
  * ...
  */
-@Tag(name = "디바이스 데이터 관리", description = "디바이스 데이터 상태 조회 API")
+@Tag(name = "[Map] 디바이스 데이터 관리", description = "디바이스 데이터 상태 조회 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${url.map.prefix}${url.map.version}/workspaces")

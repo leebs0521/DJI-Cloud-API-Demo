@@ -21,10 +21,10 @@ import java.util.Optional;
 
 import static com.dji.sample.component.AuthInterceptor.PARAM_TOKEN;
 
-@Tag(name = "로그인 관리", description = "사용자 인증 및 로그인 관련 API")
+@Tag(name = "[Manage] 로그인 관리", description = "사용자 인증 및 로그인 관련 API")
 @RequiredArgsConstructor
-@RestController
 @RequestMapping("${url.manage.prefix}${url.manage.version}")
+@RestController
 public class LoginController {
 
     private final IUserService userService;

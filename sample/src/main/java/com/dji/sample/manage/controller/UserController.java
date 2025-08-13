@@ -15,10 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import static com.dji.sample.component.AuthInterceptor.TOKEN_CLAIM;
 
-@Tag(name = "사용자 관리", description = "사용자 정보 조회 및 관리 API")
+@Tag(name = "[Manage] 사용자 관리", description = "사용자 정보 조회 및 관리 API")
 @RequiredArgsConstructor
-@RestController
 @RequestMapping("${url.manage.prefix}${url.manage.version}/users")
+@RestController
 public class UserController {
 
     private final IUserService userService;

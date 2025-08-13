@@ -13,7 +13,7 @@ import com.dji.sdk.common.PaginationData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -60,17 +60,14 @@ import static com.dji.sample.component.AuthInterceptor.TOKEN_CLAIM;
  * @version 1.2
  * @date 2022/8/16
  */
-@Tag(name = "디바이스 펌웨어 관리", description = "디바이스 펌웨어 관리 API")
+@Tag(name = "[Manage] 디바이스 펌웨어 관리", description = "디바이스 펌웨어 관리 API")
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("${url.manage.prefix}${url.manage.version}/workspaces")
 @Validated
 public class DeviceFirmwareController {
 
-    /**
-     * 디바이스 펌웨어 서비스 - 펌웨어 관리 비즈니스 로직
-     */
-    @Autowired
-    private IDeviceFirmwareService service;
+    private final IDeviceFirmwareService service;
 
     /**
      * 디바이스 모델의 최신 펌웨어 버전 정보를 조회합니다.
@@ -173,9 +170,9 @@ public class DeviceFirmwareController {
     ) {
         service.updateFirmwareInfo(
                 DeviceFirmwareDTO.builder()
-                .firmwareId(firmwareId)
-                .firmwareStatus(param.getStatus())
-                .build()
+                        .firmwareId(firmwareId)
+                        .firmwareStatus(param.getStatus())
+                        .build()
         );
         return HttpResultResponse.success();
     }

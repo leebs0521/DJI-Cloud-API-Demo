@@ -82,7 +82,7 @@ import static com.dji.sample.component.AuthInterceptor.TOKEN_CLAIM;
  * @version 0.2
  * @date 2021/11/29
  */
-@Tag(name = "워크스페이스 맵 요소 관리", description = "워크스페이스 맵 요소 관리 API")
+@Tag(name = "[Map] 워크스페이스 맵 요소 관리", description = "워크스페이스 맵 요소 관리 API")
 @RequiredArgsConstructor
 @RestController
 public class WorkspaceElementController implements IHttpMapService {

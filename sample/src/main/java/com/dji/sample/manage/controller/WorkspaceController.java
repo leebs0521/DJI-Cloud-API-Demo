@@ -17,10 +17,10 @@ import java.util.Optional;
 
 import static com.dji.sample.component.AuthInterceptor.TOKEN_CLAIM;
 
-@Tag(name = "워크스페이스 관리", description = "워크스페이스 정보 조회 및 관리 API")
+@Tag(name = "[Manage] 워크스페이스 관리", description = "워크스페이스 정보 조회 및 관리 API")
 @RequiredArgsConstructor
-@RestController
 @RequestMapping("${url.manage.prefix}${url.manage.version}/workspaces")
+@RestController
 public class WorkspaceController {
 
     private final IWorkspaceService workspaceService;

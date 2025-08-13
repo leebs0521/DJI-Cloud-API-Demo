@@ -50,14 +50,11 @@ import java.util.List;
  * @version 0.2
  * @date 2021/12/8
  */
-@Tag(name = "토폴로지 관리", description = "디바이스 토폴로지 관리 API")
+@Tag(name = "[Manage] TSA 토폴로지 관리", description = "디바이스 토폴로지 관리 API")
 @RequiredArgsConstructor
 @RestController
 public class TopologyController implements IHttpTsaService {
 
-    /**
-     * 토폴로지 서비스 - 토폴로지 관리 비즈니스 로직
-     */
     private final ITopologyService topologyService;
 
     /**

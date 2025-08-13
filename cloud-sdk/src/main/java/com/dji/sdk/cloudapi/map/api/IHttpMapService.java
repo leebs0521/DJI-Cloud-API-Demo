@@ -21,7 +21,7 @@ import java.util.List;
  * @version 0.2
  * @date 2021/11/29
  */
-@Tag(name = "지도 인터페이스")
+//@Tag(name = "지도 인터페이스")
 public interface IHttpMapService {
 
     String PREFIX = "map/api/v1";

@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,23 +52,15 @@ import static com.dji.sample.component.AuthInterceptor.TOKEN_CLAIM;
  * @date 2021/11/19
  */
 
-@Tag(name = "라이브 스트리밍", description = "라이브 스트리밍 관리 API")
-@RestController
+@Tag(name = "[Manage] 라이브 스트리밍", description = "라이브 스트리밍 관리 API")
+@RequiredArgsConstructor
 @Slf4j
 @RequestMapping("${url.manage.prefix}${url.manage.version}/live")
+@RestController
 public class LiveStreamController {
 
-    /**
-     * 라이브 스트리밍 서비스 - 라이브 스트리밍 비즈니스 로직
-     */
-    @Autowired
-    private ILiveStreamService liveStreamService;
-
-    /**
-     * JSON 직렬화를 위한 ObjectMapper
-     */
-    @Autowired
-    private ObjectMapper mapper;
+    private final ILiveStreamService liveStreamService;
+    private final ObjectMapper mapper;
 
     /**
      * 현재 사용자의 워크스페이스에 있는 모든 드론의 라이브 기능 데이터를 데이터베이스에서 조회합니다.

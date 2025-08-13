@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
  * @version 0.3
  * @date 2021/12/29
  */
-@Tag(name = "[스토리지] 스토리지", description = "미디어 파일과 웨이라인을 업로드하기 위한 임시 자격 증명을 제공하는 REST API")
+@Tag(name = "[Storage] 스토리지", description = "미디어 파일과 웨이라인을 업로드하기 위한 임시 자격 증명을 제공하는 REST API")
 @RequiredArgsConstructor
 @RestController
 public class StorageController implements IHttpStorageService {

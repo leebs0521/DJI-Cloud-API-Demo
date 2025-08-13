@@ -80,7 +80,7 @@ import static com.dji.sample.component.AuthInterceptor.TOKEN_CLAIM;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("${url.map.prefix}${url.map.version}/workspaces")
-@Tag(name = "비행 영역 관리", description = "비행 영역 관리 API")
+@Tag(name = "[Map] 비행 영역 관리", description = "비행 영역 관리 API")
 public class FlightAreaController {
 
     private final IFlightAreaService flightAreaService;

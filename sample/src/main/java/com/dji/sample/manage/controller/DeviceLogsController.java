@@ -12,8 +12,8 @@ import com.dji.sdk.common.PaginationData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,17 +55,14 @@ import static com.dji.sample.component.AuthInterceptor.TOKEN_CLAIM;
  * @version 1.2
  * @date 2022/9/7
  */
-@Tag(name = "디바이스 로그 관리", description = "디바이스 로그 관리 API")
-@RestController
+@Tag(name = "[Manage] 디바이스 로그 관리", description = "디바이스 로그 관리 API")
+@RequiredArgsConstructor
 @Slf4j
 @RequestMapping("${url.manage.prefix}${url.manage.version}/workspaces")
+@RestController
 public class DeviceLogsController {
 
-    /**
-     * 디바이스 로그 서비스 - 로그 관리 비즈니스 로직
-     */
-    @Autowired
-    private IDeviceLogsService deviceLogsService;
+    private final IDeviceLogsService deviceLogsService;
 
     /**
      * 쿼리 파라미터에 따라 디바이스 업로드 로그 목록을 페이지네이션으로 조회합니다.

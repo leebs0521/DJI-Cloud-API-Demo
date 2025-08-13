@@ -24,7 +24,7 @@ import java.net.URL;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${url.media.prefix}${url.media.version}/files")
-@Tag(name = "미디어 파일", description = "미디어 파일 조회 및 다운로드 API")
+@Tag(name = "[Media] 미디어 파일", description = "미디어 파일 조회 및 다운로드 API")
 public class FileController {
 
     private final IFileService fileService;

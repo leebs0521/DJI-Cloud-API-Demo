@@ -8,8 +8,8 @@ import com.dji.sdk.common.PaginationData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
@@ -49,14 +49,14 @@ import java.util.Set;
  * @version 1.1
  * @date 2022/7/7
  */
-@RestController
+@Tag(name = "[Manage] 디바이스 HMS 관리", description = "디바이스의 Health Management System(HMS) 관련 API")
+@RequiredArgsConstructor
 @Slf4j
 @RequestMapping("${url.manage.prefix}${url.manage.version}/devices")
-@Tag(name = "디바이스 HMS 관리", description = "디바이스의 Health Management System(HMS) 관련 API")
+@RestController
 public class DeviceHmsController {
 
-    @Autowired
-    private IDeviceHmsService deviceHmsService;
+    private final IDeviceHmsService deviceHmsService;
 
     /**
      * 디바이스의 HMS 정보를 페이지네이션으로 조회합니다.
