@@ -1,11 +1,11 @@
 package com.dji.sample.manage.model.param;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.validation.constraints.NotNull;
 
 /**
@@ -41,39 +41,25 @@ import javax.validation.constraints.NotNull;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(name = "DeviceFirmwareQueryParam", description = "디바이스 펌웨어 조회 파라미터")
 public class DeviceFirmwareQueryParam {
 
-    /**
-     * 디바이스 이름
-     * 조회할 펌웨어가 지원하는 디바이스의 이름
-     */
+    @Schema(name = "device_name", description = "디바이스 이름")
     @JsonProperty("device_name")
     private String deviceName;
 
-    /**
-     * 제품 버전
-     * 조회할 펌웨어의 제품 버전 정보
-     */
+    @Schema(name = "product_version", description = "제품 버전")
     @JsonProperty("product_version")
     private String productVersion;
 
-    /**
-     * 펌웨어 상태
-     * 펌웨어의 활성/비활성 상태 (true: 활성, false: 비활성)
-     */
+    @Schema(description = "펌웨어 상태 (true: 활성, false: 비활성)")
     private Boolean status;
 
-    /**
-     * 페이지 번호
-     * 조회할 페이지의 번호 (1부터 시작)
-     */
+    @Schema(description = "페이지 번호 (1부터 시작)")
     @NotNull
     private Long page;
 
-    /**
-     * 페이지 크기
-     * 한 페이지에 표시할 펌웨어 개수
-     */
+    @Schema(name = "page_size", description = "한 페이지에 표시할 펌웨어 개수")
     @NotNull
     @JsonProperty("page_size")
     private Long pageSize;

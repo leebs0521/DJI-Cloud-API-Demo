@@ -2,8 +2,8 @@ package com.dji.sample.manage.model.param;
 
 import com.dji.sdk.cloudapi.log.LogModuleEnum;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
 import java.util.List;
 
 /**
@@ -36,6 +36,7 @@ import java.util.List;
  * @date 2022/9/7
  */
 @Data
+@Schema(description = "디바이스 로그 조회 파라미터")
 public class DeviceLogsGetParam {
 
     /**
@@ -43,5 +44,6 @@ public class DeviceLogsGetParam {
      * 조회할 로그의 도메인 목록 (LogModuleEnum 값들의 리스트)
      */
     @JsonProperty("domain_list")
+    @Schema(description = "조회할 로그의 도메인 목록")
     List<LogModuleEnum> domainList;
 }

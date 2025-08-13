@@ -1,6 +1,7 @@
 package com.dji.sample.manage.model.param;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -36,6 +37,7 @@ import java.util.List;
  * @date 2022/12/1
  */
 @Data
+@Schema(name = "DeviceFirmwareUploadParam", description = "디바이스 펌웨어 업로드 파라미터")
 public class DeviceFirmwareUploadParam {
 
     /**
@@ -45,6 +47,7 @@ public class DeviceFirmwareUploadParam {
      */
     @NotNull
     @JsonProperty("release_note")
+    @Schema(name = "release_note", description = "펌웨어 릴리즈 노트")
     private String releaseNote;
     
     /**
@@ -53,6 +56,7 @@ public class DeviceFirmwareUploadParam {
      * 필수 입력 파라미터입니다.
      */
     @NotNull
+    @Schema(name = "status", description = "펌웨어의 활성/비활성 상태")
     private Boolean status;
 
     /**
@@ -62,5 +66,6 @@ public class DeviceFirmwareUploadParam {
      */
     @NotNull
     @JsonProperty("device_name")
+    @Schema(name = "device_name", description = "펌웨어가 지원하는 디바이스 이름 목록") 
     private List<String> deviceName;
 }

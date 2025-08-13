@@ -1,7 +1,7 @@
 package com.dji.sample.manage.model.param;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
 import javax.validation.constraints.NotNull;
 
 /**
@@ -34,6 +34,7 @@ import javax.validation.constraints.NotNull;
  * @date 2022/12/6
  */
 @Data
+@Schema(description = "펌웨어 업데이트 파라미터")
 public class DeviceFirmwareUpdateParam {
 
     /**
@@ -42,5 +43,6 @@ public class DeviceFirmwareUpdateParam {
      * 필수 입력 파라미터입니다.
      */
     @NotNull
+    @Schema(description = "펌웨어의 활성/비활성 상태 (true: 활성, false: 비활성)")
     private Boolean status;
 }

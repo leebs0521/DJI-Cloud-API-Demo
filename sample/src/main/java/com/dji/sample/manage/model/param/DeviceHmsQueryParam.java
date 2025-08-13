@@ -1,6 +1,7 @@
 package com.dji.sample.manage.model.param;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,64 +47,38 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "디바이스 HMS 조회 파라미터")
 public class DeviceHmsQueryParam {
 
-    /**
-     * 디바이스 시리얼 번호 집합
-     * 조회할 HMS 메시지가 발생한 디바이스들의 시리얼 번호 목록
-     */
+    @Schema(description = "디바이스 시리얼 번호 집합")
     @JsonProperty("device_sn")
     private Set<String> deviceSn;
 
-    /**
-     * 시작 시간
-     * HMS 메시지 조회 시작 시간 (밀리초)
-     */
+    @Schema(description = "HMS 메시지 조회 시작 시간 (밀리초)")
     @JsonProperty("begin_time")
     private Long beginTime;
 
-    /**
-     * 종료 시간
-     * HMS 메시지 조회 종료 시간 (밀리초)
-     */
+    @Schema(description = "HMS 메시지 조회 종료 시간 (밀리초)")
     @JsonProperty("end_time")
     private Long endTime;
 
-    /**
-     * 언어
-     * HMS 메시지의 언어 (예: "zh", "en")
-     */
+    @Schema(description = "HMS 메시지의 언어 (예: 'zh', 'en')")
     private String language;
 
-    /**
-     * 메시지 내용
-     * HMS 메시지 내용으로 검색할 키워드
-     */
+    @Schema(description = "HMS 메시지 내용으로 검색할 키워드")
     private String message;
 
-    /**
-     * 페이지 번호
-     * 조회할 페이지의 번호 (1부터 시작)
-     */
+    @Schema(description = "조회할 페이지의 번호 (1부터 시작)")
     private Long page;
 
-    /**
-     * 페이지 크기
-     * 한 페이지에 표시할 HMS 메시지 개수
-     */
+    @Schema(description = "한 페이지에 표시할 HMS 메시지 개수")
     @JsonProperty("page_size")
     private Long pageSize;
 
-    /**
-     * HMS 메시지 레벨
-     * HMS 메시지의 중요도 레벨 (예: 1-경고, 2-오류, 3-심각 등)
-     */
+    @Schema(description = "HMS 메시지의 중요도 레벨 (예: 1-경고, 2-오류, 3-심각 등)")
     private Integer level;
 
-    /**
-     * 수정 시간
-     * HMS 메시지의 수정 시간 기준으로 필터링 (밀리초)
-     */
+    @Schema(description = "HMS 메시지의 수정 시간 기준으로 필터링 (밀리초)")
     @JsonProperty("update_time")
     private Long updateTime;
 }

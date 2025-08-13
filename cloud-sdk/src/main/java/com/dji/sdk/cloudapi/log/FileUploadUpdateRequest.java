@@ -1,6 +1,8 @@
 package com.dji.sdk.cloudapi.log;
 
 import com.dji.sdk.common.BaseModel;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -15,6 +17,7 @@ import java.util.List;
  * @version 1.7
  * @date 2023/5/23
  */
+@Schema(description = "파일 업로드 상태 업데이트 요청")
 public class FileUploadUpdateRequest extends BaseModel {
 
     /**
@@ -23,10 +26,13 @@ public class FileUploadUpdateRequest extends BaseModel {
      */
     @NotNull
     @Size(min = 1, max = 2)
+    @ArraySchema(schema = @Schema(implementation = LogModuleEnum.class))
+    @Schema(description = "업데이트할 파일들의 모듈 목록")
     private List<LogModuleEnum> moduleList;
 
     /** 업데이트할 상태 */
     @NotNull
+    @Schema(description = "업데이트할 상태")
     private FileUploadUpdateStatusEnum status;
 
     /**

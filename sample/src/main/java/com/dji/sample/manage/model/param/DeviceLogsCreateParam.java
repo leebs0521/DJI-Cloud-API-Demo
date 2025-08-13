@@ -1,8 +1,8 @@
 package com.dji.sample.manage.model.param;
 
 import com.dji.sdk.cloudapi.log.FileUploadStartFile;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
 import java.util.List;
 
 /**
@@ -35,23 +35,15 @@ import java.util.List;
  * @date 2022/9/8
  */
 @Data
+@Schema(name = "DeviceLogsCreateParam", description = "디바이스 로그 생성 파라미터")
 public class DeviceLogsCreateParam {
 
-    /**
-     * 로그 정보
-     * 생성할 로그의 상세 정보 내용
-     */
+    @Schema(name = "logsInformation", description = "생성할 로그의 상세 정보 내용")
     private String logsInformation;
 
-    /**
-     * 발생 시간
-     * 로그가 발생한 시간 (밀리초)
-     */
+    @Schema(name = "happenTime", description = "로그가 발생한 시간 (밀리초)")
     private Long happenTime;
 
-    /**
-     * 파일 목록
-     * 로그와 관련된 파일들의 업로드 정보 목록
-     */
+    @Schema(name = "files", description = "로그와 관련된 파일들의 업로드 정보 목록")
     private List<FileUploadStartFile> files;
 }

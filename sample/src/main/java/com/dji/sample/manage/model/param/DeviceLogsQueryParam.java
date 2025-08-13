@@ -1,6 +1,7 @@
 package com.dji.sample.manage.model.param;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -38,45 +39,28 @@ import lombok.Data;
  * @date 2022/9/7
  */
 @Data
+@Schema(description = "디바이스 로그 조회 파라미터")
 public class DeviceLogsQueryParam {
 
-    /**
-     * 페이지 번호
-     * 조회할 페이지의 번호 (1부터 시작)
-     */
+    @Schema(name = "page", description = "페이지 번호")
     private Long page;
 
-    /**
-     * 페이지 크기
-     * 한 페이지에 표시할 로그 개수
-     */
+    @Schema(name = "page_size", description = "페이지 크기")
     @JsonProperty("page_size")
     private Long pageSize;
 
-    /**
-     * 로그 상태
-     * 로그의 현재 상태 (예: 0-대기, 1-처리 중, 2-완료, 3-실패 등)
-     */
+    @Schema(name = "status", description = "로그 상태 (0-대기, 1-처리 중, 2-완료, 3-실패 등)")
     private Integer status;
 
-    /**
-     * 시작 시간
-     * 로그 조회 시작 시간 (밀리초)
-     */
+    @Schema(name = "begin_time", description = "로그 조회 시작 시간 (밀리초)")
     @JsonProperty("begin_time")
     private Long beginTime;
 
-    /**
-     * 종료 시간
-     * 로그 조회 종료 시간 (밀리초)
-     */
+    @Schema(name = "end_time", description = "로그 조회 종료 시간 (밀리초)")
     @JsonProperty("end_time")
     private Long endTime;
 
-    /**
-     * 로그 정보
-     * 로그 정보 내용으로 검색할 키워드
-     */
+    @Schema(name = "logs_information", description = "로그 정보 내용으로 검색할 키워드")
     @JsonProperty("logs_information")
     private String logsInformation;
 }
