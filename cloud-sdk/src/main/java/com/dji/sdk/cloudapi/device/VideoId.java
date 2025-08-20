@@ -13,11 +13,11 @@ import java.util.Objects;
 
 /**
  * 비디오 ID 클래스
- * 
+ * <p>
  * 이 클래스는 비디오 스트림을 식별하기 위한 고유 ID를 관리합니다.
  * 드론 시리얼 번호, 페이로드 인덱스, 비디오 타입을 조합하여 비디오를 식별합니다.
  * 형식: "드론SN/페이로드인덱스/비디오타입-0"
- * 
+ *
  * @author sean
  * @version 1.7
  * @date 2023/6/25
@@ -50,7 +50,7 @@ public class VideoId {
 
     /**
      * 비디오 ID 문자열로부터 VideoId 객체를 생성합니다.
-     * 
+     *
      * @param videoId "드론SN/페이로드인덱스/비디오타입-0" 형식의 비디오 ID 문자열
      * @throws CloudSDKException 비디오 ID 형식이 올바르지 않은 경우
      */
@@ -65,12 +65,20 @@ public class VideoId {
         }
         this.droneSn = videoIdArr[0];
         this.payloadIndex = new PayloadIndex(videoIdArr[1]);
-        this.videoType = VideoTypeEnum.find(videoIdArr[2].split("-")[0]);
+        String typeToken = videoIdArr[2]; // e.g. "multi-spectral-0" or "normal-0"
+
+        // 마지막 '-' 앞까지 잘라서 baseType 추출
+        int lastDashIdx = typeToken.lastIndexOf('-');
+        String baseType = (lastDashIdx > 0)
+                ? typeToken.substring(0, lastDashIdx)
+                : typeToken;
+
+        this.videoType = VideoTypeEnum.find(baseType);
     }
 
     /**
      * 비디오 ID를 문자열로 반환합니다.
-     * 
+     *
      * @return "드론SN/페이로드인덱스/비디오타입-0" 형식의 비디오 ID 문자열
      */
     @Override
@@ -84,7 +92,7 @@ public class VideoId {
 
     /**
      * 드론 시리얼 번호를 반환합니다.
-     * 
+     *
      * @return 드론 시리얼 번호
      */
     public String getDroneSn() {
@@ -93,7 +101,7 @@ public class VideoId {
 
     /**
      * 드론 시리얼 번호를 설정하고 현재 객체를 반환합니다. (메서드 체이닝 지원)
-     * 
+     *
      * @param droneSn 설정할 드론 시리얼 번호
      * @return 현재 VideoId 객체
      */
@@ -104,7 +112,7 @@ public class VideoId {
 
     /**
      * 페이로드 인덱스를 반환합니다.
-     * 
+     *
      * @return 페이로드 인덱스
      */
     public PayloadIndex getPayloadIndex() {
@@ -113,7 +121,7 @@ public class VideoId {
 
     /**
      * 페이로드 인덱스를 설정하고 현재 객체를 반환합니다. (메서드 체이닝 지원)
-     * 
+     *
      * @param payloadIndex 설정할 페이로드 인덱스
      * @return 현재 VideoId 객체
      */
@@ -124,7 +132,7 @@ public class VideoId {
 
     /**
      * 비디오 타입을 반환합니다.
-     * 
+     *
      * @return 비디오 타입
      */
     public VideoTypeEnum getVideoType() {
@@ -133,7 +141,7 @@ public class VideoId {
 
     /**
      * 비디오 타입을 설정하고 현재 객체를 반환합니다. (메서드 체이닝 지원)
-     * 
+     *
      * @param videoType 설정할 비디오 타입
      * @return 현재 VideoId 객체
      */

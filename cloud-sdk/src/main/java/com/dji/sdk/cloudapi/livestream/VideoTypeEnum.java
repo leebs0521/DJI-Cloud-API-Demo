@@ -29,7 +29,12 @@ public enum VideoTypeEnum {
     NORMAL("normal"),
 
     /** 적외선 카메라 */
-    IR("ir");
+    IR("ir"),
+
+    MULTI_SPECTRAL("multi-spectral"),
+
+    RGB("rgb"),
+    ;
 
     /** 비디오 타입을 나타내는 문자열 값 */
     private final String type;
