@@ -49,14 +49,14 @@ public enum FlighttaskStepCodeEnum {
     IDLE(5),
 
     /**
-     * 알 수 없음 1 (코드값: 255)
+     * 항공기 이상
      */
-    UNKNOWN1(255),
+    AIRCRAFT_IS_ABNORMAL(255),
 
     /**
-     * 알 수 없음 2 (코드값: 256)
+     * 알 수 없음 (코드값: 256)
      */
-    UNKNOWN2(256),
+    UNKNOWN(256),
     ;
 
     /**

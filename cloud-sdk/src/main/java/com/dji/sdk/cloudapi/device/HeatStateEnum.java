@@ -29,7 +29,7 @@ public enum HeatStateEnum {
     HEATING(1),
 
     /**
-     * 단열 (상태값: 2)
+     * 보온 (상태값: 2)
      */
     INSULATION(2),
 

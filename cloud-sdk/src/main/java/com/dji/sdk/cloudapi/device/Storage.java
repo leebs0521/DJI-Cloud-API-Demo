@@ -13,12 +13,12 @@ package com.dji.sdk.cloudapi.device;
 public class Storage {
 
     /**
-     * 전체 스토리지 용량 (바이트)
+     * 전체 스토리지 용량 (KB)
      */
     private Long total;
 
     /**
-     * 사용된 스토리지 용량 (바이트)
+     * 사용된 스토리지 용량 (KB)
      */
     private Long used;
 

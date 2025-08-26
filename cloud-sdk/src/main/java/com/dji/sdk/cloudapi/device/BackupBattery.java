@@ -25,7 +25,7 @@ public class BackupBattery {
     private Float temperature;
 
     /**
-     * 배터리 스위치 상태 (true: 켜짐, false: 꺼짐)
+     * 백업 배터리 스위치 상태 (true: 켜짐, false: 꺼짐)
      */
     @JsonProperty("switch")
     private Boolean batterySwitch;

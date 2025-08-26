@@ -18,7 +18,7 @@ public class AirConditioner {
     private AirConditionerStateEnum airConditionerState;
 
     /**
-     * 스위치 시간 (타임스탬프)
+     * 스위치 시간(남은 대기 시간) (타임스탬프)
      */
     private Integer switchTime;
 

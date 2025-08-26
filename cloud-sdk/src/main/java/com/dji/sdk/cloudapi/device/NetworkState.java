@@ -23,7 +23,7 @@ public class NetworkState {
     private NetworkStateQualityEnum quality;
 
     /**
-     * 네트워크 속도 (Mbps)
+     * 네트워크 속도 (Kbps)
      */
     private Float rate;
 

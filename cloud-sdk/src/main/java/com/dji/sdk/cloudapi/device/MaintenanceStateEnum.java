@@ -24,7 +24,7 @@ public enum MaintenanceStateEnum {
     NO_NEED_TO_MAINTENANCE(0),
 
     /**
-     * 유지보수 필요 (상태값: 1)
+     * 유지보수 대기중 (상태값: 1)
      */
     NEED_MAINTENANCE(1),
 

@@ -5,10 +5,10 @@ import com.dji.sdk.config.version.CloudSDKVersionEnum;
 
 /**
  * 도크 OSD(On-Screen Display) 정보 클래스
- * 
+ * <p>
  * 이 클래스는 도크의 실시간 상태 정보를 담고 있습니다.
  * 네트워크 상태, 드론 상태, 환경 정보, 전력 정보 등을 포함합니다.
- * 
+ *
  * @author sean
  * @version 1.3
  * @date 2022/11/3
@@ -51,7 +51,7 @@ public class OsdDock {
     private Float temperature;
 
     /**
-     * 습도 (%)
+     * 도크 내부 습도 (%RH)
      */
     private Integer humidity;
 
@@ -66,7 +66,7 @@ public class OsdDock {
     private Float longitude;
 
     /**
-     * 고도 (m)
+     * 타원체 고도 (m)
      */
     private Float height;
 
@@ -136,7 +136,7 @@ public class OsdDock {
     private DockSubDevice subDevice;
 
     /**
-     * 작업 번호
+     * 누적 작업 숫자
      */
     private Integer jobNumber;
 
@@ -161,12 +161,12 @@ public class OsdDock {
     private Integer electricSupplyVoltage;
 
     /**
-     * 작동 전압 (V)
+     * 작동 전압 (mV)
      */
     private Integer workingVoltage;
 
     /**
-     * 작동 전류 (A)
+     * 작동 전류 (mA)
      */
     private Integer workingCurrent;
 
@@ -181,7 +181,7 @@ public class OsdDock {
     private DroneBatteryMaintenanceInfo droneBatteryMaintenanceInfo;
 
     /**
-     * 비행 작업 단계 코드
+     * Dock 임무 상태
      */
     private FlighttaskStepCodeEnum flighttaskStepCode;
 
@@ -210,6 +210,11 @@ public class OsdDock {
      */
     @CloudSDKVersion(since = CloudSDKVersionEnum.V1_0_0)
     private UserExperienceImprovementEnum userExperienceImprovement;
+
+    /**
+     * 드론 권한 정보 클래스
+     */
+    private DroneAuthorityInfo droneAuthorityInfo;
 
     /**
      * 기본 생성자
@@ -259,6 +264,7 @@ public class OsdDock {
                 ", wirelessLink=" + wirelessLink +
                 ", drcState=" + drcState +
                 ", userExperienceImprovement=" + userExperienceImprovement +
+                ", droneAuthorityInfo=" + droneAuthorityInfo +
                 '}';
     }
 
@@ -610,6 +616,15 @@ public class OsdDock {
 
     public OsdDock setUserExperienceImprovement(UserExperienceImprovementEnum userExperienceImprovement) {
         this.userExperienceImprovement = userExperienceImprovement;
+        return this;
+    }
+
+    public DroneAuthorityInfo getDroneAuthorityInfo() {
+        return droneAuthorityInfo;
+    }
+
+    public OsdDock setDroneAuthorityInfo(DroneAuthorityInfo droneAuthorityInfo) {
+        this.droneAuthorityInfo = droneAuthorityInfo;
         return this;
     }
 }

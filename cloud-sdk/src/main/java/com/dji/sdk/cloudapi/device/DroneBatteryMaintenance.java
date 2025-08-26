@@ -18,7 +18,7 @@ public class DroneBatteryMaintenance {
     private BatteryIndexEnum index;
 
     /**
-     * 배터리 용량 퍼센트 (%)
+     * 배터리 용량 퍼센트 (%) 0 ~ 100
      */
     private Integer capacityPercent;
 

@@ -1,5 +1,7 @@
 package com.dji.sdk.cloudapi.device;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * 도크 서브 디바이스 클래스
  * 
@@ -30,7 +32,8 @@ public class DockSubDevice {
     /**
      * 디바이스 모델 키
      */
-    private DeviceEnum deviceModelKey;
+    @JsonProperty("product_type")
+    private DeviceEnum productType;
 
     /**
      * 기본 생성자
@@ -44,7 +47,7 @@ public class DockSubDevice {
                 "deviceSn='" + deviceSn + '\'' +
                 ", deviceOnlineStatus=" + deviceOnlineStatus +
                 ", devicePaired=" + devicePaired +
-                ", deviceModelKey=" + deviceModelKey +
+                ", productType=" + productType +
                 '}';
     }
 
@@ -113,18 +116,18 @@ public class DockSubDevice {
      * 
      * @return 디바이스 모델 키
      */
-    public DeviceEnum getDeviceModelKey() {
-        return deviceModelKey;
+    public DeviceEnum getProductType() {
+        return productType;
     }
 
     /**
      * 디바이스 모델 키를 설정하고 현재 객체를 반환합니다. (메서드 체이닝 지원)
      * 
-     * @param deviceModelKey 설정할 디바이스 모델 키
+     * @param productType 설정할 디바이스 모델 키
      * @return 현재 DockSubDevice 객체
      */
-    public DockSubDevice setDeviceModelKey(DeviceEnum deviceModelKey) {
-        this.deviceModelKey = deviceModelKey;
+    public DockSubDevice setProductType(DeviceEnum productType) {
+        this.productType = productType;
         return this;
     }
 }
