@@ -146,23 +146,23 @@ cloud-api:
     key: cf1757b7f2425dc4612b2dcbff7aa59
     license: BejCbxhwIHccpkw1xzcS2ilx+ntHcsGWdd3qYkeyOELhxVwVaIIU0tsApjXFsCNRQjzlFTCWS5lNKo9hklrPHaCW9Ue5fk5bn9huOpPP7I/3g38yeYO0REJ7h7igN5Bgp6v3asUS2mJLt7r/W2LEqtuh9P+NyWMMiljNidiLKYc=
 
-#livestream:
-#  url:
-#    # It is recommended to use a program to create Token. https://github.com/AgoraIO/Tools/blob/master/DynamicKey/AgoraDynamicKey/java/src/main/java/io/agora/media/RtcTokenBuilder2.java
-#    agora:
-#      channel: Please enter the agora channel.
-#      token: Please enter the agora temporary token.
-#      uid:  654321
-#
-#    # RTMP  Note: This IP is the address of the streaming server. If you want to see livestream on web page, you need to convert the RTMP stream to WebRTC stream.
-#    rtmp:
-#      url: Please enter the rtmp access address.  # Example: 'rtmp://192.168.1.1/live/'
-#    rtsp:
-#      username: Please enter the username.
-#      password: Please enter the password.
-#      port: 8554
-#
-#    # GB28181 Note:If you don't know what these parameters mean, you can go to Pilot2 and select the GB28181 page in the cloud platform. Where the parameters same as these parameters.
+livestream:
+  url:
+    # It is recommended to use a program to create Token. https://github.com/AgoraIO/Tools/blob/master/DynamicKey/AgoraDynamicKey/java/src/main/java/io/agora/media/RtcTokenBuilder2.java
+    agora:
+      channel: Please enter the agora channel.
+      token: Please enter the agora temporary token.
+      uid:  654321
+
+    # RTMP  Note: This IP is the address of the streaming server. If you want to see livestream on web page, you need to convert the RTMP stream to WebRTC stream.
+    rtmp:
+      url: rtmp://192.168.0.87/live/  # Example: 'rtmp://192.168.1.1/live/'
+    rtsp:
+      username: Please enter the username.
+      password: Please enter the password.
+      port: 8554
+
+    # GB28181 Note:If you don't know what these parameters mean, you can go to Pilot2 and select the GB28181 page in the cloud platform. Where the parameters same as these parameters.
 #    gb28181:
 #      serverIP: Please enter the server ip.
 #      serverPort: Please enter the server port.
@@ -171,11 +171,11 @@ cloud-api:
 #      agentPassword: Please enter the agent password.
 #      localPort: Please enter the local port.
 #      channel: Please enter the channel.
-#
-#    # Webrtc: Only supports using whip standard
-#    whip:
-#      url: Please enter the rtmp access address. #  Example：http://192.168.1.1:1985/rtc/v1/whip/?app=live&stream=
 
+    # Webrtc: Only supports using whip standard
+    whip:
+      url: http://192.168.0.87:1985/rtc/v1/whip/?app=live&stream= #  Example：http://192.168.1.1:1985/rtc/v1/whip/?app=live&stream=
+#
 # Swagger
 springdoc:
   swagger-ui:

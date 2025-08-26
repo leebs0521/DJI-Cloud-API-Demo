@@ -74,7 +74,7 @@ public class MqttPropertyConfiguration {
     private static String getMqttAddress(MqttClientOptions options) {
         String host = options.getHost().trim();
         if (host.equals("localhost")) {
-            host = "192.168.0.57";
+            host = "192.168.0.87";
         }
 
         StringBuilder addr = new StringBuilder()

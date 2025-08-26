@@ -138,7 +138,7 @@ public class LiveStreamServiceImpl implements ILiveStreamService {
         url = setExt(liveParam.getUrlType(), url, liveParam.getVideoId());
 
         // 라이브스트림 시작 요청
-        TopicServicesResponse<ServicesReplyData<String>> response = abstractLivestreamService.liveStartPush(
+        TopicServicesResponse<ServicesReplyData<liveStreamStartResponse>> response = abstractLivestreamService.liveStartPush(
                 SDKManager.getDeviceSDK(responseResult.getData().getDeviceSn()),
                 new LiveStartPushRequest()
                         .setUrl(url)
@@ -171,7 +171,7 @@ public class LiveStreamServiceImpl implements ILiveStreamService {
                         .toString());
                 break;
             case RTSP:
-                live.setUrl(response.getData().getOutput());
+                live.setUrl(response.getData().getOutput().getInfo());
                 break;
             case WHIP:
                 live.setUrl(url.toString().replace("whip", "whep"));

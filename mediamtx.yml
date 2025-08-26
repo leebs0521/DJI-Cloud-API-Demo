@@ -1,0 +1,7 @@
+paths:
+  all:
+    source: publisher   # 퍼블리셔(OBS, FFmpeg 등) 허용
+
+webrtc:
+  # WebRTC 활성화 (WHIP/WHEP 지원)
+  # 기본적으로 /whip/<path>, /whep/<path> 엔드포인트 생성
