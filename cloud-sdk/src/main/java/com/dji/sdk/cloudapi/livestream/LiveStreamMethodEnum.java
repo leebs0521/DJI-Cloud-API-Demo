@@ -22,8 +22,12 @@ public enum LiveStreamMethodEnum {
     LIVE_SET_QUALITY("live_set_quality"),
 
     /** 라이브스트림 렌즈 변경 */
-    LIVE_LENS_CHANGE("live_lens_change");
+    LIVE_LENS_CHANGE("live_lens_change"),
 
+    /** 라이브 스트리밍 카메라 전환 */
+    LIVE_CAMERA_CHANGE("live_camera_change"),
+
+    ;
     /** 메서드 타입을 나타내는 문자열 값 */
     private final String method;
 
