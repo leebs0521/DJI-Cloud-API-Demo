@@ -51,7 +51,7 @@ public enum FlighttaskStepCodeEnum {
     /**
      * 항공기 이상
      */
-    AIRCRAFT_IS_ABNORMAL(255),
+    AIRCRAFT_ERROR(255),
 
     /**
      * 알 수 없음 (코드값: 256)

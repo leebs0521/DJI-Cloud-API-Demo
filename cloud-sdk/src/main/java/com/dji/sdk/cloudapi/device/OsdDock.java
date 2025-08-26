@@ -217,6 +217,17 @@ public class OsdDock {
     private DroneAuthorityInfo droneAuthorityInfo;
 
     /**
+     * 홈 포지션 유효성 상태 열거형 클래스
+     */
+    private HomePositionIsValidEnum homePositionIsValid;
+
+    /**
+     * 도크 방위각(°, 진북 기준 각도) -180 ~ 180
+     * */
+    private Double heading;
+
+
+    /**
      * 기본 생성자
      */
     public OsdDock() {

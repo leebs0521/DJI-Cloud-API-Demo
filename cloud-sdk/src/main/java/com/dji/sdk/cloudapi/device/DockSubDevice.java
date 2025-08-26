@@ -1,13 +1,11 @@
 package com.dji.sdk.cloudapi.device;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * 도크 서브 디바이스 클래스
- * 
+ * <p>
  * 이 클래스는 도크에 연결된 서브 디바이스의 정보를 담습니다.
  * 디바이스 시리얼 번호, 온라인 상태, 페어링 상태, 디바이스 모델 등을 포함합니다.
- * 
+ *
  * @author sean
  * @version 1.0
  * @date 2022/5/11
@@ -32,8 +30,7 @@ public class DockSubDevice {
     /**
      * 디바이스 모델 키
      */
-    @JsonProperty("product_type")
-    private DeviceEnum productType;
+    private DeviceEnum deviceModelKey;
 
     /**
      * 기본 생성자
@@ -47,13 +44,13 @@ public class DockSubDevice {
                 "deviceSn='" + deviceSn + '\'' +
                 ", deviceOnlineStatus=" + deviceOnlineStatus +
                 ", devicePaired=" + devicePaired +
-                ", productType=" + productType +
+                ", deviceModelKey=" + deviceModelKey +
                 '}';
     }
 
     /**
      * 디바이스 시리얼 번호를 반환합니다.
-     * 
+     *
      * @return 디바이스 시리얼 번호
      */
     public String getDeviceSn() {
@@ -62,7 +59,7 @@ public class DockSubDevice {
 
     /**
      * 디바이스 시리얼 번호를 설정하고 현재 객체를 반환합니다. (메서드 체이닝 지원)
-     * 
+     *
      * @param deviceSn 설정할 디바이스 시리얼 번호
      * @return 현재 DockSubDevice 객체
      */
@@ -73,7 +70,7 @@ public class DockSubDevice {
 
     /**
      * 디바이스 온라인 상태를 반환합니다.
-     * 
+     *
      * @return 디바이스 온라인 상태
      */
     public Boolean getDeviceOnlineStatus() {
@@ -82,7 +79,7 @@ public class DockSubDevice {
 
     /**
      * 디바이스 온라인 상태를 설정하고 현재 객체를 반환합니다. (메서드 체이닝 지원)
-     * 
+     *
      * @param deviceOnlineStatus 설정할 디바이스 온라인 상태
      * @return 현재 DockSubDevice 객체
      */
@@ -93,7 +90,7 @@ public class DockSubDevice {
 
     /**
      * 디바이스 페어링 상태를 반환합니다.
-     * 
+     *
      * @return 디바이스 페어링 상태
      */
     public Boolean getDevicePaired() {
@@ -102,7 +99,7 @@ public class DockSubDevice {
 
     /**
      * 디바이스 페어링 상태를 설정하고 현재 객체를 반환합니다. (메서드 체이닝 지원)
-     * 
+     *
      * @param devicePaired 설정할 디바이스 페어링 상태
      * @return 현재 DockSubDevice 객체
      */
@@ -113,21 +110,21 @@ public class DockSubDevice {
 
     /**
      * 디바이스 모델 키를 반환합니다.
-     * 
+     *
      * @return 디바이스 모델 키
      */
-    public DeviceEnum getProductType() {
-        return productType;
+    public DeviceEnum getDeviceModelKey() {
+        return deviceModelKey;
     }
 
     /**
      * 디바이스 모델 키를 설정하고 현재 객체를 반환합니다. (메서드 체이닝 지원)
-     * 
-     * @param productType 설정할 디바이스 모델 키
+     *
+     * @param deviceModelKey 설정할 디바이스 모델 키
      * @return 현재 DockSubDevice 객체
      */
-    public DockSubDevice setProductType(DeviceEnum productType) {
-        this.productType = productType;
+    public DockSubDevice setDeviceModelKey(DeviceEnum deviceModelKey) {
+        this.deviceModelKey = deviceModelKey;
         return this;
     }
 }
